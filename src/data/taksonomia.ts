@@ -7,7 +7,7 @@ export const KATEGORIE = {
   },
   modele: {
     nazwa: 'Modele i architektura',
-    opis: 'Z czego zbudowane są modele i jak działają.',
+    opis: 'Z czego zbudowane są modele, jak działają i co potrafią.',
   },
   trening: {
     nazwa: 'Trening i optymalizacja',
@@ -15,7 +15,7 @@ export const KATEGORIE = {
   },
   'prompty-agenci': {
     nazwa: 'Prompty, RAG i agenci',
-    opis: 'Budowanie aplikacji: od promptu po autonomicznego agenta.',
+    opis: 'Budowanie aplikacji AI i ich ocena: od promptu po agenta.',
   },
   bezpieczenstwo: {
     nazwa: 'Bezpieczeństwo i kontrola',
@@ -23,7 +23,7 @@ export const KATEGORIE = {
   },
   'biznes-prawo': {
     nazwa: 'Biznes, prawo i praca',
-    opis: 'AI w firmach, rynek i regulacje: od AI Act po shadow AI.',
+    opis: 'AI w firmach, rynek, regulacje i etyka: od AI Act po shadow AI.',
   },
 } as const;
 

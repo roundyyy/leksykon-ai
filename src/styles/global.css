@@ -322,6 +322,11 @@ a.karta:hover { border-color: var(--border-strong); box-shadow: var(--shadow); }
 .proza a { color: var(--accent); }
 .proza code { font-size: 0.9em; background: var(--surface-2); padding: 0.1em 0.35em; border-radius: 6px; overflow-wrap: anywhere; }
 .proza ul, .proza ol { padding-left: 1.3em; }
+/* samodzielny wzór w akapicie (np. Accuracy = …) jako blok */
+.proza p > code:only-child {
+  display: block; padding: 10px 14px; border-radius: 10px; line-height: 1.6;
+  overflow-wrap: normal; border-left: 3px solid var(--border-strong);
+}
 
 /* ---- pola formularzy ---- */
 .pole { display: grid; gap: 6px; }
