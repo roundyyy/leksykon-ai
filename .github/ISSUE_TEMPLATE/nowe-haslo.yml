@@ -1,0 +1,49 @@
+name: Zaproponuj hasło
+description: Brakuje jakiegoś pojęcia? Zgłoś je — nie musisz pisać pełnej definicji.
+title: "[Nowe hasło] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Dzięki! Wystarczy termin i kilka słów wyjaśnienia. Jeśli chcesz od razu napisać całe hasło, skorzystaj z formularza na stronie: https://roundyyy.github.io/leksykon-ai/dodaj/
+  - type: input
+    id: termin
+    attributes:
+      label: Termin
+      description: Tak, jak się go używa (zwykle po angielsku).
+      placeholder: np. context rot
+    validations:
+      required: true
+  - type: input
+    id: pl
+    attributes:
+      label: Polski odpowiednik lub krótki opis
+      placeholder: np. gnicie kontekstu
+  - type: textarea
+    id: wyjasnienie
+    attributes:
+      label: Co to znaczy?
+      description: Kilka zdań wystarczy. Może być po swojemu.
+    validations:
+      required: true
+  - type: input
+    id: przyklad
+    attributes:
+      label: Przykład użycia
+      placeholder: np. Po 200 stronach model łapie context rot.
+  - type: dropdown
+    id: kategoria
+    attributes:
+      label: Kategoria
+      options:
+        - Nie wiem
+        - Kultura i slang
+        - Modele i architektura
+        - Trening i optymalizacja
+        - Prompty, RAG i agenci
+        - Bezpieczeństwo i kontrola
+  - type: input
+    id: zrodlo
+    attributes:
+      label: Gdzie to słowo spotkałeś/spotkałaś?
+      description: Link do artykułu, posta, dokumentacji — pomaga zweryfikować hasło.

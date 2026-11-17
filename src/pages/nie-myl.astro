@@ -1,0 +1,59 @@
+---
+import { render } from 'astro:content';
+import Baza from '../layouts/Baza.astro';
+import { wszystkieHasla, wszystkiePorownania, urlHasla } from '../lib/hasla';
+
+const hasla = await wszystkieHasla();
+const mapa = new Map(hasla.map((h) => [h.id, h]));
+const porownania = await Promise.all((await wszystkiePorownania()).map(async (p) => ({ p, ...(await render(p)) })));
+---
+
+<Baza tytul="Nie myl!" opis="Pojęcia AI, które najczęściej się myli: RAG vs fine-tuning, agent vs workflow, MCP vs function calling i inne.">
+  <div class="wrap">
+    <h1 class="tytul-strony">Nie myl!</h1>
+    <p class="lead">Pary i grupy pojęć, które brzmią podobnie, a znaczą co innego. {porownania.length} porównań.</p>
+
+    <nav class="spis" aria-label="Spis porównań">
+      {porownania.map(({ p }) => <a class="chip" href={`#${p.id}`}>{p.data.tytul}</a>)}
+    </nav>
+
+    <div class="porownania">
+      {
+        porownania.map(({ p, Content }) => (
+          <article class="karta porownanie" id={p.id}>
+            <h2>{p.data.tytul}</h2>
+            <div class="proza">
+              <Content />
+            </div>
+            {p.data.hasla.some((id) => mapa.has(id)) && (
+              <div class="chipy">
+                {p.data.hasla
+                  .filter((id) => mapa.has(id))
+                  .map((id) => (
+                    <a class={`chip kat-${mapa.get(id)!.data.kategoria}`} href={urlHasla(id)}>
+                      <span class="kropka" aria-hidden="true" />
+                      {mapa.get(id)!.data.termin}
+                    </a>
+                  ))}
+              </div>
+            )}
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</Baza>
+
+<style>
+  .spis { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin: 20px calc(var(--gutter) * -1) 0; padding: 0 var(--gutter) 4px; }
+  .spis::-webkit-scrollbar { display: none; }
+  .spis .chip { flex: 0 0 auto; }
+  @media (min-width: 900px) { .spis { flex-wrap: wrap; overflow: visible; } }
+
+  .porownania { display: grid; gap: 14px; margin-top: 22px; }
+  @media (min-width: 900px) { .porownania { grid-template-columns: 1fr 1fr; align-items: start; } }
+  .porownanie { display: grid; gap: 14px; padding: 18px; scroll-margin-top: calc(var(--header-h) + 16px); }
+  .porownanie:target { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .porownanie h2 { font-family: var(--font-serif); font-size: 1.35rem; font-weight: 650; }
+  .porownanie .proza { font-size: 1.02rem; }
+</style>

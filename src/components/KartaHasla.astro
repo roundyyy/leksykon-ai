@@ -1,0 +1,18 @@
+---
+import { urlHasla, type Haslo } from '../lib/hasla';
+import { wielka } from '../lib/tekst';
+
+interface Props {
+  h: Haslo;
+}
+const { h } = Astro.props;
+---
+
+<a href={urlHasla(h.id)} class={`karta karta-hasla kat-${h.data.kategoria}`}>
+  <span class="karta-hasla__gora">
+    <span class="kropka" aria-hidden="true"></span>
+    <span class="karta-hasla__termin">{h.data.termin}</span>
+  </span>
+  <span class="karta-hasla__pl">{h.data.pl}</span>
+  <span class="karta-hasla__skrot">{wielka(h.data.skrot)}</span>
+</a>

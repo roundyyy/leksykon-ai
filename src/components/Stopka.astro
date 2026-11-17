@@ -1,0 +1,20 @@
+---
+import { url } from '../lib/hasla';
+import { REPO_URL, zgloszenieUrl } from '../data/repo';
+import { STAN_NA } from '../data/taksonomia';
+---
+
+<footer class="stopka">
+  <div class="wrap stopka__in">
+    <div class="stopka__linki">
+      <a href={url('/slownik/')}>Słownik A–Z</a>
+      <a href={url('/nie-myl/')}>Nie myl!</a>
+      <a href={url('/sciagawka/')}>Ściągawka</a>
+      <a href={url('/dodaj/')}>Dodaj hasło</a>
+      <a href={zgloszenieUrl('nowe-haslo.yml')}>Zaproponuj hasło</a>
+      <a href={url('/o-projekcie/')}>O projekcie</a>
+      <a href={REPO_URL}>Kod na GitHubie</a>
+    </div>
+    <small>Leksykon AI · stan wiedzy na {STAN_NA} · współtworzony przez czytelników</small>
+  </div>
+</footer>

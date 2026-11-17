@@ -1,0 +1,23 @@
+---
+import { KATEGORIE, STATUSY, REJESTRY } from '../data/taksonomia';
+import { url } from '../lib/hasla';
+import type { Haslo } from '../lib/hasla';
+
+interface Props {
+  h: Haslo;
+  rejestr?: boolean;
+  linki?: boolean;
+}
+const { h, rejestr = false, linki = false } = Astro.props;
+const { kategoria, status, status_uwagi } = h.data;
+const tytulStatusu = [STATUSY[status].opis, status_uwagi && `W źródle: „${status_uwagi}”.`].filter(Boolean).join(' ');
+const Kat = linki ? 'a' : 'span';
+---
+
+<div class="odznaki">
+  <Kat class={`odznaka odznaka--kat kat-${kategoria}`} href={linki ? url(`/slownik/?kat=${kategoria}`) : undefined}>
+    {KATEGORIE[kategoria].nazwa}
+  </Kat>
+  <span class="odznaka odznaka--status" title={tytulStatusu}>{STATUSY[status].nazwa}</span>
+  {rejestr && h.data.rejestr.map((r) => <span class="odznaka odznaka--rejestr">{REJESTRY[r]}</span>)}
+</div>

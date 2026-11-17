@@ -1,0 +1,26 @@
+name: Zgłoś błąd w haśle
+description: Coś jest nieaktualne, nieprecyzyjne albo po prostu błędne?
+title: "[Poprawka] "
+body:
+  - type: input
+    id: haslo
+    attributes:
+      label: Którego hasła dotyczy?
+      placeholder: np. MCP
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Co jest nie tak?
+    validations:
+      required: true
+  - type: textarea
+    id: propozycja
+    attributes:
+      label: Jak powinno być?
+  - type: input
+    id: zrodlo
+    attributes:
+      label: Źródło
+      description: Link, który potwierdza poprawkę (jeśli masz).

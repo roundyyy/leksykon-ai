@@ -1,0 +1,357 @@
+---
+import Baza from '../layouts/Baza.astro';
+import Ikona from '../components/Ikona.astro';
+import { wszystkieHasla, urlHasla, url } from '../lib/hasla';
+import { KATEGORIE, STATUSY, REJESTRY } from '../data/taksonomia';
+import { litera, wielka, ileHasel } from '../lib/tekst';
+
+const hasla = await wszystkieHasla();
+const grupy = new Map<string, typeof hasla>();
+for (const h of hasla) {
+  const l = litera(h.data.termin);
+  grupy.set(l, [...(grupy.get(l) ?? []), h]);
+}
+const ALFABET = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
+const liczba = (kat: string) => hasla.filter((h) => h.data.kategoria === kat).length;
+---
+
+<Baza tytul="Słownik A–Z" opis={`Wszystkie hasła Leksykonu AI (${ileHasel(hasla.length)}) — szukaj, filtruj po kategorii i statusie.`}>
+  <div class="wrap">
+    <h1 class="tytul-strony">Słownik</h1>
+    <p class="lead">{ileHasel(hasla.length)} od A do Z. Wpisz, czego szukasz, albo zawęź listę filtrami.</p>
+  </div>
+
+  <form class="pasek" id="filtry" role="search" onsubmit="return false">
+    <div class="wrap pasek__in">
+      <div class="pasek__szukaj">
+        <Ikona nazwa="szukaj" />
+        <input
+          class="pasek__pole"
+          type="search"
+          name="q"
+          placeholder="Filtruj hasła…"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+          enterkeyhint="search"
+          aria-label="Filtruj hasła"
+        />
+      </div>
+      <details class="filtry" id="panel-filtrow">
+        <summary class="btn btn--maly">
+          <Ikona nazwa="filtr" /> Filtry <span class="filtry__ile" data-ile-filtrow hidden></span>
+        </summary>
+        <div class="filtry__panel">
+          <fieldset class="wybor">
+            <legend class="etykieta">Kategoria</legend>
+            <label><input type="radio" name="kat" value="" checked /><span>Wszystkie</span></label>
+            {
+              Object.entries(KATEGORIE).map(([id, k]) => (
+                <label class={`kat-${id}`}>
+                  <input type="radio" name="kat" value={id} />
+                  <span>
+                    <i class="kropka" aria-hidden="true" />
+                    {k.nazwa} <small>{liczba(id)}</small>
+                  </span>
+                </label>
+              ))
+            }
+          </fieldset>
+          <fieldset class="wybor">
+            <legend class="etykieta">Status</legend>
+            <label><input type="radio" name="status" value="" checked /><span>Każdy</span></label>
+            {
+              Object.entries(STATUSY).map(([id, s]) => (
+                <label title={s.opis}>
+                  <input type="radio" name="status" value={id} />
+                  <span>{s.nazwa}</span>
+                </label>
+              ))
+            }
+          </fieldset>
+          <fieldset class="wybor">
+            <legend class="etykieta">Rejestr</legend>
+            <label><input type="radio" name="rejestr" value="" checked /><span>Każdy</span></label>
+            {
+              Object.entries(REJESTRY).map(([id, n]) => (
+                <label>
+                  <input type="radio" name="rejestr" value={id} />
+                  <span>{n}</span>
+                </label>
+              ))
+            }
+          </fieldset>
+          <div class="filtry__akcje">
+            <button type="button" class="btn btn--glowny" data-pokaz>Pokaż wyniki</button>
+            <button type="reset" class="btn" data-wyczysc>Wyczyść</button>
+          </div>
+        </div>
+      </details>
+    </div>
+    <div class="wrap">
+      <nav class="litery" aria-label="Skocz do litery" data-litery>
+        {
+          ALFABET.map((l) =>
+            grupy.has(l) ? (
+              <a href={`#l-${l}`}>{l}</a>
+            ) : (
+              <span aria-hidden="true">{l}</span>
+            ),
+          )
+        }
+      </nav>
+    </div>
+  </form>
+
+  <div class="wrap">
+    <p class="licznik" aria-live="polite" data-licznik></p>
+
+    <div data-grupy>
+      {
+        [...grupy.entries()].map(([l, lista]) => (
+          <section class="grupa" id={`l-${l}`} data-grupa>
+            <h2 class="grupa__litera">{l}</h2>
+            <ul class="lista">
+              {lista.map((h) => (
+                <li
+                  data-id={h.id}
+                  data-kat={h.data.kategoria}
+                  data-status={h.data.status}
+                  data-rejestr={h.data.rejestr.join(' ')}
+                >
+                  <a href={urlHasla(h.id)} class={`wiersz kat-${h.data.kategoria}`}>
+                    <span class="kropka" aria-hidden="true" />
+                    <span class="wiersz__tresc">
+                      <span class="wiersz__termin">
+                        {h.data.termin}
+                        {h.data.rozwiniecie && <small>{h.data.rozwiniecie}</small>}
+                      </span>
+                      <span class="wiersz__pl">{h.data.pl}</span>
+                      <span class="wiersz__skrot">{wielka(h.data.skrot)}</span>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      }
+    </div>
+    <ul class="lista" data-wyniki hidden></ul>
+
+    <div class="pusto" data-pusto hidden>
+      <p>Nie znaleźliśmy takiego hasła.</p>
+      <div class="pusto__akcje">
+        <a class="btn btn--glowny" data-pusto-dodaj href={url('/dodaj/')}><Ikona nazwa="plus" /> Dodaj hasło</a>
+        <button type="button" class="btn" data-wyczysc-wszystko>Pokaż wszystkie</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    import { szukaj, adres } from '../scripts/indeks';
+  
+    const form = document.getElementById('filtry') as HTMLFormElement;
+    const pole = form.elements.namedItem('q') as HTMLInputElement;
+    const grupy = document.querySelector<HTMLElement>('[data-grupy]')!;
+    const wyniki = document.querySelector<HTMLUListElement>('[data-wyniki]')!;
+    const litery = document.querySelector<HTMLElement>('[data-litery]')!;
+    const licznik = document.querySelector<HTMLElement>('[data-licznik]')!;
+    const pusto = document.querySelector<HTMLElement>('[data-pusto]')!;
+    const ileFiltrow = document.querySelector<HTMLElement>('[data-ile-filtrow]')!;
+    const elementy = new Map(
+      [...grupy.querySelectorAll<HTMLLIElement>('li[data-id]')].map((li) => [li.dataset.id!, li]),
+    );
+    const RAZEM = elementy.size;
+  const panel = document.getElementById('panel-filtrow') as HTMLDetailsElement;
+  const pokaz = document.querySelector<HTMLButtonElement>('[data-pokaz]')!;
+  pokaz.addEventListener('click', () => {
+    panel.open = false;
+    document.querySelector('[data-licznik]')!.scrollIntoView({ block: 'nearest' });
+  });
+    let nr = 0;
+  
+    const wartosc = (n: string) => (form.elements.namedItem(n) as RadioNodeList).value;
+  
+    function pasuje(li: HTMLElement, kat: string, status: string, rej: string) {
+      return (
+        (!kat || li.dataset.kat === kat) &&
+        (!status || li.dataset.status === status) &&
+        (!rej || (li.dataset.rejestr ?? '').split(' ').includes(rej))
+      );
+    }
+  
+    const odmiana = (n: number) => {
+      if (n === 1) return 'hasło';
+      const d = n % 10, s = n % 100;
+      return d >= 2 && d <= 4 && (s < 12 || s > 14) ? 'hasła' : 'haseł';
+    };
+  
+    async function zastosuj() {
+      const q = pole.value.trim();
+      const kat = wartosc('kat'), status = wartosc('status'), rej = wartosc('rejestr');
+      const moje = ++nr;
+      let widoczne = 0;
+  
+      if (q) {
+        let trafienia;
+        try {
+          trafienia = await szukaj(q, 200);
+        } catch {
+          licznik.textContent = 'Nie udało się wczytać wyszukiwarki.';
+          return;
+        }
+        if (moje !== nr) return;
+        const lista = trafienia.map((w) => elementy.get(w.id)).filter((li): li is HTMLLIElement => !!li && pasuje(li, kat, status, rej));
+        wyniki.replaceChildren(...lista.map((li) => li.cloneNode(true)));
+        widoczne = lista.length;
+        grupy.hidden = true;
+        litery.hidden = true;
+        wyniki.hidden = false;
+      } else {
+        for (const li of elementy.values()) {
+          const ok = pasuje(li, kat, status, rej);
+          li.hidden = !ok;
+          if (ok) widoczne++;
+        }
+        grupy.querySelectorAll<HTMLElement>('[data-grupa]').forEach((g) => {
+          g.hidden = !g.querySelector('li:not([hidden])');
+        });
+        litery.querySelectorAll('a').forEach((a) => {
+          const g = document.querySelector<HTMLElement>(a.getAttribute('href')!);
+          a.classList.toggle('wylaczona', !!g?.hidden);
+        });
+        grupy.hidden = false;
+        litery.hidden = false;
+        wyniki.hidden = true;
+      }
+  
+      const filtry = [kat, status, rej].filter(Boolean).length;
+      ileFiltrow.hidden = !filtry;
+      ileFiltrow.textContent = String(filtry);
+      licznik.textContent = q || filtry ? `Pokazuję ${widoczne} z ${RAZEM} ${odmiana(RAZEM)}` : `${RAZEM} ${odmiana(RAZEM)}`;
+    pokaz.textContent = `Pokaż ${widoczne} ${odmiana(widoczne)}`;
+      pusto.hidden = widoczne > 0;
+      document.querySelector<HTMLAnchorElement>('[data-pusto-dodaj]')!.href = adres(q ? `dodaj/?termin=${encodeURIComponent(q)}` : 'dodaj/');
+  
+      const p = new URLSearchParams();
+      if (q) p.set('q', q);
+      if (kat) p.set('kat', kat);
+      if (status) p.set('status', status);
+      if (rej) p.set('rejestr', rej);
+      const s = p.toString();
+      history.replaceState(null, '', s ? `?${s}${location.hash}` : location.pathname + location.hash);
+    }
+  
+    // stan z adresu
+    const start = new URLSearchParams(location.search);
+    pole.value = start.get('q') ?? '';
+    for (const n of ['kat', 'status', 'rejestr']) {
+      const v = start.get(n);
+      const r = v && form.querySelector<HTMLInputElement>(`input[name="${n}"][value="${CSS.escape(v)}"]`);
+      if (r) r.checked = true;
+    }
+    if (start.get('kat') || start.get('status') || start.get('rejestr')) {
+      panel.open = matchMedia('(min-width: 900px)').matches;
+    }
+  
+    form.addEventListener('input', zastosuj);
+    form.addEventListener('change', zastosuj);
+    form.addEventListener('reset', () => setTimeout(zastosuj));
+    document.querySelector('[data-wyczysc-wszystko]')!.addEventListener('click', () => {
+      form.reset();
+      pole.value = '';
+      setTimeout(zastosuj);
+    });
+    pole.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') pole.blur(); // schowaj klawiaturę na telefonie
+    });
+    zastosuj();
+  </script>
+</Baza>
+
+<style>
+  .pasek {
+    position: sticky; top: var(--header-h); z-index: 30; margin-top: 18px;
+    background: var(--bg); /* bez backdrop-filter: inaczej panel „fixed” liczyłby się od paska */
+    border-bottom: 1px solid var(--border);
+  }
+  .pasek__in { display: flex; gap: 8px; align-items: flex-start; padding-top: 10px; }
+  .pasek__szukaj {
+    flex: 1 1 0; min-width: 0; display: flex; align-items: center; gap: 8px; height: 46px; padding: 0 12px; border-radius: 12px;
+    border: 1.5px solid var(--border-strong); background: var(--surface);
+  }
+  .pasek__szukaj:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .pasek__szukaj :global(.ikona) { color: var(--text-3); }
+  .pasek__pole { flex: 1; min-width: 0; border: 0; background: transparent; outline: none; font-size: 1rem; height: 100%; }
+
+  .filtry { flex: 0 0 auto; }
+  .filtry summary { list-style: none; height: 46px; min-height: 46px; border-radius: 12px; }
+  .filtry summary::-webkit-details-marker { display: none; }
+  .filtry[open] summary { background: var(--accent-soft); border-color: var(--accent); }
+  .filtry__ile {
+    display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px;
+    background: var(--accent); color: var(--accent-ink); font-size: 0.78rem;
+  }
+  /* telefon: panel wysuwany od dołu, nad dolną nawigacją */
+  .filtry__panel {
+    position: fixed; left: 0; right: 0; bottom: calc(var(--bottom-h) + env(safe-area-inset-bottom)); z-index: 5;
+    display: grid; gap: 18px; padding: 16px; border-radius: 20px 20px 0 0;
+    background: var(--surface); border: 1px solid var(--border); border-bottom: 0;
+    box-shadow: 0 -12px 40px rgb(0 0 0 / 0.18);
+    max-height: 72dvh; overflow-y: auto; overscroll-behavior: contain;
+  }
+  .filtry__panel small { color: inherit; opacity: 0.6; font-weight: 500; }
+  .filtry__akcje {
+    position: sticky; bottom: -16px; display: flex; gap: 8px; margin: 0 -16px -16px; padding: 12px 16px 16px;
+    background: var(--surface); border-top: 1px solid var(--border);
+  }
+  .filtry__akcje [data-pokaz] { flex: 1; }
+  @media (min-width: 900px) {
+    .filtry__panel {
+      position: absolute; bottom: auto; left: auto; right: var(--gutter); width: 520px; margin-top: 8px;
+      border-radius: var(--radius); border-bottom: 1px solid var(--border); box-shadow: var(--shadow-lg);
+      max-height: calc(100vh - var(--header-h) - 120px);
+    }
+  }
+
+  .litery {
+    display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; padding-block: 8px; margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+  }
+  .litery::-webkit-scrollbar { display: none; }
+  .litery a, .litery span {
+    flex: 0 0 auto; display: grid; place-items: center; min-width: 36px; height: 36px; border-radius: 9px;
+    font-weight: 650; font-size: 0.95rem; text-decoration: none;
+  }
+  .litery a { color: var(--accent); }
+  .litery a:hover { background: var(--accent-soft); }
+  .litery span, .litery a.wylaczona { color: var(--border-strong); pointer-events: none; }
+
+  .licznik { color: var(--text-3); font-size: 0.9rem; margin: 14px 0 4px; }
+
+  .grupa { scroll-margin-top: calc(var(--header-h) + 130px); }
+  .grupa__litera {
+    font-family: var(--font-serif); font-size: 1.6rem; font-weight: 700; color: var(--accent);
+    padding: 18px 0 6px; border-bottom: 2px solid var(--border);
+  }
+  .lista { list-style: none; padding: 0; }
+  .lista :global(li) { border-bottom: 1px solid var(--border); }
+  .lista :global(.wiersz) {
+    display: grid; grid-template-columns: auto 1fr; gap: 12px; padding: 14px 4px; text-decoration: none;
+  }
+  .lista :global(.wiersz:hover) { background: var(--surface); }
+  .lista :global(.wiersz .kropka) { margin-top: 8px; }
+  .lista :global(.wiersz__tresc) { display: grid; gap: 1px; min-width: 0; }
+  .lista :global(.wiersz__termin) { font-weight: 650; font-size: 1.08rem; }
+  .lista :global(.wiersz__termin small) { font-weight: 500; color: var(--text-3); font-size: 0.85rem; margin-left: 6px; }
+  .lista :global(.wiersz__pl) { color: var(--text-2); font-size: 0.95rem; }
+  .lista :global(.wiersz__skrot) {
+    color: var(--text-3); font-size: 0.9rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  @media (min-width: 900px) {
+    .lista :global(.wiersz) { padding-inline: 10px; border-radius: 10px; }
+  }
+
+  .pusto { text-align: center; padding: 40px 0; color: var(--text-2); }
+  .pusto__akcje { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+</style>

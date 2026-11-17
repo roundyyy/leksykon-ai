@@ -1,0 +1,550 @@
+---
+import Baza from '../layouts/Baza.astro';
+import Ikona from '../components/Ikona.astro';
+import { wszystkieHasla, url } from '../lib/hasla';
+import { KATEGORIE, STATUSY, REJESTRY } from '../data/taksonomia';
+import { zgloszenieUrl } from '../data/repo';
+
+const hasla = await wszystkieHasla();
+const istniejace = hasla.map((h) => ({ id: h.id, t: h.data.termin, a: h.data.aliasy }));
+const nazwyKategorii = Object.fromEntries(Object.entries(KATEGORIE).map(([id, k]) => [id, k.nazwa]));
+---
+
+<Baza tytul="Dodaj hasło" opis="Dodaj nowe hasło do Leksykonu AI — bez programowania, przez prosty formularz.">
+  <div class="wrap">
+    <h1 class="tytul-strony">Dodaj hasło</h1>
+    <p class="lead">Wypełnij formularz — przygotujemy gotowy plik i otworzymy GitHuba. Ty klikasz tylko „Commit changes”.</p>
+
+    <ol class="kroki">
+      <li><span>1</span>Wypełnij pola poniżej</li>
+      <li><span>2</span>Kliknij „Opublikuj na GitHubie”</li>
+      <li><span>3</span>Na GitHubie zatwierdź zielonym przyciskiem</li>
+    </ol>
+    <p class="pomoc-konto">
+      Potrzebujesz darmowego konta GitHub. Nie chcesz pisać całej definicji?
+      <a href={zgloszenieUrl('nowe-haslo.yml')} rel="noopener">Wystarczy zaproponować hasło</a>.
+    </p>
+
+    <div class="info info--ok szkic" data-szkic hidden>
+      <Ikona nazwa="info" />
+      <span>Przywrócono niedokończony szkic z tego urządzenia. <button type="button" class="link" data-wyczysc-szkic>Zacznij od nowa</button></span>
+    </div>
+
+    <div class="uklad">
+      <form id="formularz" class="formularz" novalidate>
+        <fieldset class="karta blok">
+          <legend class="blok__tytul">Podstawy</legend>
+          <div class="pole">
+            <label for="termin">Termin <abbr title="wymagane">*</abbr></label>
+            <input class="input" id="termin" name="termin" required autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="np. context rot" aria-describedby="termin-pomoc termin-blad" />
+            <p class="pomoc" id="termin-pomoc">Tak, jak się go używa — zwykle po angielsku. Adres hasła: <code data-slug>/haslo/…/</code></p>
+            <p class="blad" id="termin-blad" data-blad-dla="termin" hidden></p>
+            <div class="info info--uwaga" data-duplikat hidden></div>
+          </div>
+          <div class="pole">
+            <label for="rozwiniecie">Rozwinięcie skrótu</label>
+            <input class="input" id="rozwiniecie" name="rozwiniecie" autocomplete="off" placeholder="np. Retrieval-Augmented Generation" />
+            <p class="pomoc">Tylko jeśli termin jest skrótem.</p>
+          </div>
+          <div class="pole">
+            <label for="pl">Polski odpowiednik <abbr title="wymagane">*</abbr></label>
+            <input class="input" id="pl" name="pl" required autocomplete="off" placeholder="np. gnicie kontekstu" aria-describedby="pl-blad" />
+            <p class="blad" id="pl-blad" data-blad-dla="pl" hidden></p>
+          </div>
+          <div class="pole">
+            <label for="aliasy">Inne nazwy</label>
+            <input class="input" id="aliasy" name="aliasy" autocomplete="off" placeholder="np. context degradation, CR" />
+            <p class="pomoc">Oddziel przecinkami. Pomagają w wyszukiwaniu.</p>
+          </div>
+        </fieldset>
+
+        <fieldset class="karta blok">
+          <legend class="blok__tytul">Wyjaśnienie</legend>
+          <div class="pole">
+            <label for="skrot">W jednym zdaniu <abbr title="wymagane">*</abbr></label>
+            <input class="input" id="skrot" name="skrot" required maxlength="160" autocomplete="off" placeholder="np. spadek jakości odpowiedzi, gdy kontekst robi się bardzo długi" aria-describedby="skrot-pomoc skrot-blad" />
+            <p class="pomoc" id="skrot-pomoc"><span data-licznik-skrot>0</span>/160 · zacznij małą literą, bez kropki na końcu</p>
+            <p class="blad" id="skrot-blad" data-blad-dla="skrot" hidden></p>
+          </div>
+          <div class="pole">
+            <label for="definicja">Pełna definicja <abbr title="wymagane">*</abbr></label>
+            <textarea class="textarea" id="definicja" name="definicja" required rows="7" placeholder="Co to jest, skąd się wzięło, na co uważać. Możesz dodać drugi akapit z kontekstem." aria-describedby="definicja-pomoc definicja-blad"></textarea>
+            <p class="pomoc" id="definicja-pomoc">Pusta linia = nowy akapit. **pogrubienie**, *kursywa*.</p>
+            <p class="blad" id="definicja-blad" data-blad-dla="definicja" hidden></p>
+          </div>
+          <div class="pole">
+            <label for="przyklad">Przykład użycia</label>
+            <input class="input" id="przyklad" name="przyklad" autocomplete="off" placeholder="np. Po 200 stronach model łapie context rot i gubi wątek." />
+            <p class="pomoc">Zdanie, w którym ktoś naturalnie używa tego słowa. Bez cudzysłowu.</p>
+          </div>
+        </fieldset>
+
+        <fieldset class="karta blok">
+          <legend class="blok__tytul">Klasyfikacja</legend>
+          <fieldset class="wybor" aria-describedby="kategoria-blad">
+            <legend class="etykieta">Kategoria <abbr title="wymagane">*</abbr></legend>
+            {
+              Object.entries(KATEGORIE).map(([id, k]) => (
+                <label class={`kat-${id}`}>
+                  <input type="radio" name="kategoria" value={id} required />
+                  <span>
+                    <i class="kropka" aria-hidden="true" />
+                    {k.nazwa}
+                  </span>
+                </label>
+              ))
+            }
+          </fieldset>
+          <p class="blad" id="kategoria-blad" data-blad-dla="kategoria" hidden></p>
+
+          <fieldset class="wybor" aria-describedby="status-opis status-blad">
+            <legend class="etykieta">Status <abbr title="wymagane">*</abbr></legend>
+            {
+              Object.entries(STATUSY).map(([id, s]) => (
+                <label>
+                  <input type="radio" name="status" value={id} data-opis={s.opis} required />
+                  <span>{s.nazwa}</span>
+                </label>
+              ))
+            }
+          </fieldset>
+          <p class="pomoc" id="status-opis" data-status-opis>Jak stabilne jest znaczenie tego słowa?</p>
+          <p class="blad" id="status-blad" data-blad-dla="status" hidden></p>
+
+          <fieldset class="wybor">
+            <legend class="etykieta">Rejestr <small class="pomoc">(można kilka)</small></legend>
+            {
+              Object.entries(REJESTRY).map(([id, n]) => (
+                <label>
+                  <input type="checkbox" name="rejestr" value={id} />
+                  <span>{n}</span>
+                </label>
+              ))
+            }
+          </fieldset>
+        </fieldset>
+
+        <fieldset class="karta blok">
+          <legend class="blok__tytul">Powiązania i źródła</legend>
+          <div class="pole">
+            <label for="powiazane-pole">Powiązane hasła</label>
+            <div class="rzad">
+              <input class="input" id="powiazane-pole" list="lista-hasel" autocomplete="off" placeholder="Zacznij pisać, np. RAG" />
+              <button type="button" class="btn" data-dodaj-powiazane>Dodaj</button>
+            </div>
+            <datalist id="lista-hasel">
+              {hasla.map((h) => <option value={h.data.termin} />)}
+            </datalist>
+            <div class="chipy" data-powiazane></div>
+            <p class="blad" data-blad-powiazane hidden></p>
+          </div>
+          <div class="pole">
+            <span class="etykieta">Źródła</span>
+            <div class="zrodla" data-zrodla></div>
+            <button type="button" class="btn btn--maly" data-dodaj-zrodlo><Ikona nazwa="plus" /> Dodaj źródło</button>
+            <p class="blad" data-blad-dla="zrodla" hidden></p>
+          </div>
+        </fieldset>
+      </form>
+
+      <aside class="bok">
+        <div class="bok__sticky">
+          <h2 class="bok__tytul">Podgląd</h2>
+          <div class="karta podglad" data-podglad>
+            <p class="podglad__pusty">Zacznij wypełniać formularz, a tu zobaczysz, jak będzie wyglądać hasło.</p>
+          </div>
+
+          <div class="akcje">
+            <button type="button" class="btn btn--glowny btn--pelny" data-publikuj>
+              <Ikona nazwa="zewn" /> Opublikuj na GitHubie
+            </button>
+            <button type="button" class="btn btn--pelny" data-kopiuj><Ikona nazwa="kopiuj" /> Kopiuj plik</button>
+          </div>
+          <p class="blad" data-blad-ogolny hidden></p>
+
+          <div class="info info--ok wynik" data-wynik hidden>
+            <Ikona nazwa="ok" />
+            <div>
+              <p><strong>GitHub otwarty w nowej karcie.</strong> Dokończ tam:</p>
+              <ol>
+                <li>Kliknij zielony przycisk <strong>Commit changes…</strong> (albo <strong>Propose changes</strong>, jeśli nie jesteś właścicielem).</li>
+                <li>W okienku zatwierdź jeszcze raz.</li>
+                <li>Hasło pojawi się na stronie po 1–2 minutach (propozycje — po akceptacji).</li>
+              </ol>
+              <p class="wynik__mala">Jeśli otworzyła się aplikacja GitHub i nie widzisz edytora, otwórz link w przeglądarce.</p>
+              <p class="wynik__mala" data-wynik-wklej hidden><strong>Hasło było za długie na link</strong> — treść jest w schowku: wklej ją w edytorze GitHuba.</p>
+            </div>
+          </div>
+
+          <details class="plik">
+            <summary>Zobacz plik, który powstanie</summary>
+            <pre data-plik></pre>
+          </details>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script type="application/json" id="dane-dodaj" set:html={JSON.stringify({ istniejace, nazwyKategorii, statusy: STATUSY })} />
+
+  <script>
+    import { toFrontmatter } from '../lib/frontmatter.mjs';
+    import { slugify, fold, escapeHtml, wielka } from '../lib/tekst';
+    import { nowyPlikUrl, edycjaUrl } from '../data/repo';
+    import { adresHasla } from '../scripts/indeks';
+
+    type Ist = { id: string; t: string; a: string[] };
+    const { istniejace, nazwyKategorii, statusy } = JSON.parse(document.getElementById('dane-dodaj')!.textContent!) as {
+      istniejace: Ist[];
+      nazwyKategorii: Record<string, string>;
+      statusy: Record<string, { nazwa: string; opis: string }>;
+    };
+    const POLA = ['termin', 'rozwiniecie', 'aliasy', 'pl', 'skrot', 'kategoria', 'rejestr', 'status', 'status_uwagi', 'przyklad', 'powiazane', 'zrodla', 'dodano', 'aktualne_na'];
+    const KLUCZ_SZKICU = 'leksykon-szkic-v1';
+
+    const form = document.getElementById('formularz') as HTMLFormElement;
+    const $ = <T extends Element = HTMLElement>(s: string) => document.querySelector<T>(s)!;
+    const pole = (n: string) => form.elements.namedItem(n) as HTMLInputElement | HTMLTextAreaElement;
+    const val = (n: string) => pole(n).value.trim();
+    const radio = (n: string) => (form.elements.namedItem(n) as RadioNodeList).value;
+    const checks = (n: string) => [...form.querySelectorAll<HTMLInputElement>(`input[name="${n}"]:checked`)].map((c) => c.value);
+
+    const powiazane: string[] = [];
+    const poId = new Map(istniejace.map((h) => [h.id, h]));
+    const poNazwie = new Map<string, Ist>();
+    for (const h of istniejace) {
+      poNazwie.set(fold(h.t), h);
+      for (const a of h.a) if (!poNazwie.has(fold(a))) poNazwie.set(fold(a), h);
+    }
+
+    // ---------- źródła ----------
+    const zrodlaBox = $('[data-zrodla]');
+    function dodajZrodlo(tytul = '', adres = '') {
+      const w = document.createElement('div');
+      w.className = 'zrodlo';
+      w.innerHTML = `
+        <input class="input" data-z-tytul placeholder="Tytuł, np. Raport NIST" autocomplete="off" aria-label="Tytuł źródła">
+        <input class="input" data-z-url type="url" inputmode="url" placeholder="https://…" autocomplete="off" aria-label="Adres źródła">
+        <button type="button" class="ikona-btn" aria-label="Usuń źródło" data-usun>✕</button>`;
+      (w.querySelector('[data-z-tytul]') as HTMLInputElement).value = tytul;
+      (w.querySelector('[data-z-url]') as HTMLInputElement).value = adres;
+      w.querySelector('[data-usun]')!.addEventListener('click', () => { w.remove(); odswiez(); });
+      zrodlaBox.append(w);
+    }
+    const zrodla = () =>
+      [...zrodlaBox.querySelectorAll('.zrodlo')]
+        .map((w) => ({
+          tytul: (w.querySelector('[data-z-tytul]') as HTMLInputElement).value.trim(),
+          url: (w.querySelector('[data-z-url]') as HTMLInputElement).value.trim(),
+        }))
+        .filter((z) => z.tytul || z.url);
+    $('[data-dodaj-zrodlo]').addEventListener('click', () => {
+      dodajZrodlo();
+      (zrodlaBox.lastElementChild!.querySelector('input') as HTMLInputElement).focus();
+    });
+
+    // ---------- powiązane ----------
+    const chipyPow = $('[data-powiazane]');
+    const polePow = $<HTMLInputElement>('#powiazane-pole');
+    const bladPow = $('[data-blad-powiazane]');
+    function rysujPowiazane() {
+      chipyPow.innerHTML = powiazane
+        .map((id) => `<button type="button" class="chip" data-usun-pow="${id}" aria-label="Usuń ${escapeHtml(poId.get(id)!.t)}">${escapeHtml(poId.get(id)!.t)} <span aria-hidden="true">✕</span></button>`)
+        .join('');
+    }
+    function dodajPowiazane() {
+      const q = polePow.value.trim();
+      if (!q) return;
+      const h = poNazwie.get(fold(q)) ?? poId.get(slugify(q));
+      if (!h) {
+        bladPow.textContent = `Nie ma hasła „${q}”. Wybierz z podpowiedzi.`;
+        bladPow.hidden = false;
+        return;
+      }
+      bladPow.hidden = true;
+      if (!powiazane.includes(h.id)) powiazane.push(h.id);
+      polePow.value = '';
+      rysujPowiazane();
+      odswiez();
+    }
+    $('[data-dodaj-powiazane]').addEventListener('click', dodajPowiazane);
+    polePow.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); dodajPowiazane(); } });
+    polePow.addEventListener('change', () => { if (poNazwie.has(fold(polePow.value.trim()))) dodajPowiazane(); });
+    chipyPow.addEventListener('click', (e) => {
+      const b = (e.target as Element).closest<HTMLElement>('[data-usun-pow]');
+      if (!b) return;
+      powiazane.splice(powiazane.indexOf(b.dataset.usunPow!), 1);
+      rysujPowiazane();
+      odswiez();
+    });
+
+    // ---------- dane i plik ----------
+    const dzis = () => new Date().toISOString().slice(0, 10);
+    function zbierz() {
+      const termin = val('termin');
+      const dane = {
+        termin,
+        rozwiniecie: val('rozwiniecie') || undefined,
+        aliasy: val('aliasy').split(',').map((s) => s.trim()).filter(Boolean),
+        pl: val('pl'),
+        skrot: val('skrot').replace(/\.$/, ''),
+        kategoria: radio('kategoria'),
+        rejestr: checks('rejestr'),
+        status: radio('status'),
+        przyklad: val('przyklad').replace(/^[„"“]+|[”"“]+$/g, '').trim() || undefined,
+        powiazane: [...powiazane],
+        zrodla: zrodla(),
+        dodano: dzis(),
+        aktualne_na: dzis(),
+      };
+      const tresc = val('definicja').replace(/\r\n/g, '\n');
+      return { slug: slugify(termin), dane, tresc };
+    }
+    const plik = () => {
+      const { dane, tresc } = zbierz();
+      return `${toFrontmatter(dane, POLA)}\n${tresc}\n`;
+    };
+
+    // ---------- walidacja ----------
+    function ustawBlad(nazwa: string, tekst: string | null) {
+      const p = form.querySelector<HTMLElement>(`[data-blad-dla="${nazwa}"]`);
+      if (p) { p.textContent = tekst ?? ''; p.hidden = !tekst; }
+      const el = form.elements.namedItem(nazwa);
+      if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) el.setAttribute('aria-invalid', String(!!tekst));
+    }
+    function sprawdz() {
+      const { slug, dane, tresc } = zbierz();
+      const bledy: [string, string][] = [];
+      if (!dane.termin) bledy.push(['termin', 'Podaj termin.']);
+      else if (!slug) bledy.push(['termin', 'Termin musi zawierać litery lub cyfry.']);
+      else if (poId.has(slug)) bledy.push(['termin', 'To hasło już istnieje — zobacz ostrzeżenie poniżej.']);
+      if (!dane.pl) bledy.push(['pl', 'Podaj polski odpowiednik lub krótki opis.']);
+      if (!dane.skrot) bledy.push(['skrot', 'Napisz jedno zdanie wyjaśnienia.']);
+      if (tresc.length < 40) bledy.push(['definicja', 'Definicja jest za krótka — napisz przynajmniej 1–2 zdania.']);
+      if (!dane.kategoria) bledy.push(['kategoria', 'Wybierz kategorię.']);
+      if (!dane.status) bledy.push(['status', 'Wybierz status.']);
+      const zle = dane.zrodla.find((z) => !z.tytul || !/^https?:\/\/\S+\.\S+/.test(z.url));
+      if (zle) bledy.push(['zrodla', 'Każde źródło potrzebuje tytułu i pełnego adresu (https://…).']);
+      ['termin', 'pl', 'skrot', 'definicja', 'kategoria', 'status', 'zrodla'].forEach((n) => ustawBlad(n, bledy.find((b) => b[0] === n)?.[1] ?? null));
+      return bledy;
+    }
+
+    // ---------- duplikaty ----------
+    const duplikat = $('[data-duplikat]');
+    function sprawdzDuplikat() {
+      const t = val('termin');
+      const slug = slugify(t);
+      $('[data-slug]').textContent = `/haslo/${slug || '…'}/`;
+      const h = (slug && poId.get(slug)) || (t && poNazwie.get(fold(t)));
+      if (!h) { duplikat.hidden = true; return; }
+      const ten = slug === h.id;
+      duplikat.innerHTML = `<div><strong>${ten ? 'To hasło już istnieje' : 'Podobne hasło już istnieje'}:</strong>
+        <a href="${adresHasla(h.id)}" target="_blank" rel="noopener">${escapeHtml(h.t)}</a>.
+        ${ten ? `Możesz je <a href="${edycjaUrl(h.id)}" rel="noopener">edytować na GitHubie</a>.` : 'Upewnij się, że to inne pojęcie.'}</div>`;
+      duplikat.hidden = false;
+    }
+
+    // ---------- podgląd ----------
+    const podglad = $('[data-podglad]');
+    function rysujPodglad() {
+      const { dane, tresc } = zbierz();
+      if (!dane.termin && !dane.pl && !dane.skrot && !tresc) return;
+      const akapity = tresc
+        .split(/\n\s*\n/)
+        .filter(Boolean)
+        .map((a) => `<p>${escapeHtml(a).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>')}</p>`)
+        .join('');
+      podglad.className = `karta podglad kat-${dane.kategoria || 'brak'}`;
+      podglad.innerHTML = `
+        <p class="podglad__termin">${escapeHtml(dane.termin || 'Termin')}</p>
+        ${dane.rozwiniecie ? `<p class="podglad__rozw">${escapeHtml(dane.rozwiniecie)}</p>` : ''}
+        <p class="podglad__pl"><span>po polsku:</span> <strong>${escapeHtml(dane.pl || '…')}</strong></p>
+        <div class="odznaki">
+          ${dane.kategoria ? `<span class="odznaka odznaka--kat kat-${dane.kategoria}">${escapeHtml(nazwyKategorii[dane.kategoria])}</span>` : ''}
+          ${dane.status ? `<span class="odznaka odznaka--status">${escapeHtml(statusy[dane.status].nazwa)}</span>` : ''}
+          ${dane.rejestr.map((r) => `<span class="odznaka odznaka--rejestr">${escapeHtml(r)}</span>`).join('')}
+        </div>
+        ${dane.skrot ? `<p class="podglad__skrot">${escapeHtml(wielka(dane.skrot))}</p>` : ''}
+        <div class="proza podglad__def">${akapity}</div>
+        ${dane.przyklad ? `<blockquote class="podglad__przyklad">„${escapeHtml(dane.przyklad)}”</blockquote>` : ''}`;
+    }
+
+    // ---------- szkic ----------
+    function zapiszSzkic() {
+      const stan: Record<string, unknown> = {};
+      for (const n of ['termin', 'rozwiniecie', 'aliasy', 'pl', 'skrot', 'definicja', 'przyklad']) stan[n] = pole(n).value;
+      stan.kategoria = radio('kategoria');
+      stan.status = radio('status');
+      stan.rejestr = checks('rejestr');
+      stan.powiazane = powiazane;
+      stan.zrodla = zrodla();
+      try { localStorage.setItem(KLUCZ_SZKICU, JSON.stringify(stan)); } catch {}
+    }
+    function wczytajSzkic() {
+      let stan: Record<string, any> | null = null;
+      try { stan = JSON.parse(localStorage.getItem(KLUCZ_SZKICU) ?? 'null'); } catch {}
+      if (!stan || !Object.values(stan).some((v) => (Array.isArray(v) ? v.length : v))) return false;
+      for (const n of ['termin', 'rozwiniecie', 'aliasy', 'pl', 'skrot', 'definicja', 'przyklad']) if (typeof stan[n] === 'string') pole(n).value = stan[n];
+      for (const n of ['kategoria', 'status']) {
+        const r = form.querySelector<HTMLInputElement>(`input[name="${n}"][value="${CSS.escape(stan[n] ?? '')}"]`);
+        if (r) r.checked = true;
+      }
+      for (const r of stan.rejestr ?? []) {
+        const c = form.querySelector<HTMLInputElement>(`input[name="rejestr"][value="${CSS.escape(r)}"]`);
+        if (c) c.checked = true;
+      }
+      for (const id of stan.powiazane ?? []) if (poId.has(id)) powiazane.push(id);
+      for (const z of stan.zrodla ?? []) dodajZrodlo(z.tytul, z.url);
+      rysujPowiazane();
+      return true;
+    }
+    $('[data-wyczysc-szkic]').addEventListener('click', () => {
+      try { localStorage.removeItem(KLUCZ_SZKICU); } catch {}
+      form.reset();
+      powiazane.length = 0;
+      zrodlaBox.replaceChildren();
+      rysujPowiazane();
+      $('[data-szkic]').hidden = true;
+      podglad.className = 'karta podglad';
+      podglad.innerHTML = '<p class="podglad__pusty">Zacznij wypełniać formularz, a tu zobaczysz, jak będzie wyglądać hasło.</p>';
+      odswiez();
+    });
+
+    // ---------- odświeżanie ----------
+    let probowano = false;
+    function odswiez() {
+      sprawdzDuplikat();
+      rysujPodglad();
+      $('[data-licznik-skrot]').textContent = String(pole('skrot').value.length);
+      const st = form.querySelector<HTMLInputElement>('input[name="status"]:checked');
+      $('[data-status-opis]').textContent = st ? st.dataset.opis! : 'Jak stabilne jest znaczenie tego słowa?';
+      $('[data-plik]').textContent = plik();
+      if (probowano) sprawdz();
+      zapiszSzkic();
+    }
+    form.addEventListener('input', odswiez);
+    form.addEventListener('change', odswiez);
+    form.addEventListener('submit', (e) => e.preventDefault());
+
+    // ---------- akcje ----------
+    const bladOgolny = $('[data-blad-ogolny]');
+    function gotowe() {
+      probowano = true;
+      const bledy = sprawdz();
+      if (bledy.length) {
+        bladOgolny.textContent = `Popraw ${bledy.length === 1 ? 'zaznaczone pole' : `zaznaczone pola (${bledy.length})`}.`;
+        bladOgolny.hidden = false;
+        const pierwszy = bledy[0][0];
+        const el = form.querySelector<HTMLElement>(`[name="${pierwszy}"]`) ?? form.querySelector<HTMLElement>(`[data-blad-dla="${pierwszy}"]`);
+        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) el.focus({ preventScroll: true });
+        return false;
+      }
+      bladOgolny.hidden = true;
+      return true;
+    }
+
+    async function kopiuj(tekst: string) {
+      try { await navigator.clipboard.writeText(tekst); return true; } catch { return false; }
+    }
+
+    $('[data-publikuj]').addEventListener('click', () => {
+      if (!gotowe()) return;
+      const { slug } = zbierz();
+      const tresc = plik();
+      let adres = nowyPlikUrl(slug, tresc);
+      const zaDlugi = adres.length > 7500;
+      if (zaDlugi) {
+        adres = nowyPlikUrl(slug);
+        void kopiuj(tresc); // bez await: okno musi się otworzyć w tym samym kliknięciu (iOS)
+      }
+      window.open(adres, '_blank', 'noopener');
+      $('[data-wynik-wklej]').hidden = !zaDlugi;
+      $('[data-wynik]').hidden = false;
+      $('[data-wynik]').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+
+    $('[data-kopiuj]').addEventListener('click', async (e) => {
+      if (!gotowe()) return;
+      const btn = e.currentTarget as HTMLButtonElement;
+      const stary = btn.innerHTML;
+      const ok = await kopiuj(plik());
+      btn.textContent = ok ? 'Skopiowano ✓' : 'Nie udało się — skopiuj z podglądu pliku';
+      setTimeout(() => (btn.innerHTML = stary), 2500);
+      if (!ok) (document.querySelector('details.plik') as HTMLDetailsElement).open = true;
+    });
+
+    // ---------- start ----------
+    const zAdresu = new URLSearchParams(location.search).get('termin');
+    if (zAdresu) {
+      pole('termin').value = zAdresu;
+    } else if (wczytajSzkic()) {
+      $('[data-szkic]').hidden = false;
+    }
+    odswiez();
+  </script>
+</Baza>
+
+<style>
+  .kroki { list-style: none; padding: 0; display: grid; gap: 8px; margin-top: 18px; }
+  .kroki li { display: flex; align-items: center; gap: 10px; font-weight: 550; }
+  .kroki span {
+    display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--accent-ink);
+    font-size: 0.85rem; font-weight: 750; flex-shrink: 0;
+  }
+  @media (min-width: 760px) { .kroki { grid-template-columns: repeat(3, auto); justify-content: start; gap: 24px; } }
+  .pomoc-konto { color: var(--text-2); font-size: 0.95rem; margin-top: 14px; }
+  .pomoc-konto a { color: var(--accent); font-weight: 600; }
+  .szkic { margin-top: 16px; }
+  .link { color: inherit; font-weight: 650; text-decoration: underline; }
+
+  .uklad { display: grid; gap: 16px; margin-top: 20px; }
+  @media (min-width: 1000px) {
+    .uklad { grid-template-columns: minmax(0, 1fr) 380px; gap: 28px; align-items: start; }
+    .bok__sticky { position: sticky; top: calc(var(--header-h) + 16px); max-height: calc(100vh - var(--header-h) - 32px); overflow-y: auto; }
+  }
+
+  .formularz { display: grid; gap: 16px; }
+  .blok { display: grid; gap: 18px; border: 1px solid var(--border); padding: 18px 16px; min-width: 0; }
+  .blok__tytul { font-family: var(--font-serif); font-size: 1.3rem; font-weight: 650; padding: 0 6px; margin-left: -6px; }
+  .blok abbr { color: var(--err); text-decoration: none; }
+  .blok .wybor { gap: 8px; }
+  .pole code { font-size: 0.85em; background: var(--surface-2); padding: 1px 6px; border-radius: 6px; }
+  .rzad { display: flex; gap: 8px; }
+  .rzad .input { flex: 1; min-width: 0; }
+  .rzad .btn { border-radius: 12px; }
+  [data-powiazane] .chip { cursor: pointer; }
+  [data-powiazane]:empty { display: none; }
+  .zrodla { display: grid; gap: 10px; }
+  .zrodla:empty { display: none; }
+  .zrodla :global(.zrodlo) {
+    display: grid; grid-template-columns: 1fr auto; gap: 6px; padding: 10px; border-radius: 12px; background: var(--surface-2);
+  }
+  .zrodla :global(.zrodlo [data-z-url]) { grid-column: 1; }
+  .zrodla :global(.zrodlo [data-usun]) { grid-row: 1 / span 2; grid-column: 2; align-self: center; }
+  [data-dodaj-zrodlo] { justify-self: start; }
+
+  .bok__tytul { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-3); margin-bottom: 8px; font-weight: 700; }
+  .podglad { display: grid; gap: 8px; border-top: 4px solid var(--kat, var(--border)); }
+  .podglad :global(.podglad__pusty) { color: var(--text-3); font-size: 0.95rem; }
+  .podglad :global(.podglad__termin) { font-family: var(--font-serif); font-size: 1.8rem; font-weight: 700; line-height: 1.1; overflow-wrap: anywhere; }
+  .podglad :global(.podglad__rozw) { font-family: var(--font-serif); font-style: italic; color: var(--text-2); }
+  .podglad :global(.podglad__pl span) { color: var(--text-3); }
+  .podglad :global(.podglad__skrot) {
+    font-weight: 550; padding: 10px 12px; border-radius: 10px; border-left: 4px solid var(--kat, var(--border));
+    background: color-mix(in srgb, var(--kat, var(--text-3)) 9%, var(--surface));
+  }
+  .podglad :global(.podglad__def) { font-size: 0.97rem; }
+  .podglad :global(.podglad__przyklad) { font-family: var(--font-serif); font-style: italic; color: var(--text-2); }
+
+  .akcje { display: grid; gap: 8px; margin-top: 14px; }
+  .bok > .blad, [data-blad-ogolny] { margin-top: 8px; }
+  .wynik { margin-top: 14px; }
+  .wynik ol { padding-left: 1.2em; margin: 6px 0; font-size: 0.95rem; }
+  .wynik__mala { font-size: 0.88rem; color: var(--text-2); margin-top: 6px; }
+  .plik { margin-top: 14px; font-size: 0.92rem; }
+  .plik summary { cursor: pointer; color: var(--text-2); padding: 8px 0; min-height: 44px; display: flex; align-items: center; }
+  .plik pre {
+    white-space: pre-wrap; word-break: break-word; background: var(--surface-2); padding: 12px; border-radius: 10px; font-size: 0.8rem; max-height: 320px; overflow: auto;
+  }
+</style>

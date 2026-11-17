@@ -1,0 +1,37 @@
+---
+import Ikona from './Ikona.astro';
+import { url } from '../lib/hasla';
+
+const sciezka = Astro.url.pathname;
+const aktywny = (cel: string) => (sciezka.startsWith(url(cel)) ? 'page' : undefined);
+const NAV = [
+  { cel: '/slownik/', nazwa: 'Słownik' },
+  { cel: '/nie-myl/', nazwa: 'Nie myl!' },
+  { cel: '/sciagawka/', nazwa: 'Ściągawka' },
+  { cel: '/o-projekcie/', nazwa: 'O projekcie' },
+];
+---
+
+<header class="naglowek">
+  <div class="wrap naglowek__in">
+    <a href={url('/')} class="logo" aria-label="Leksykon AI — strona główna">
+      <span class="logo__znak" aria-hidden="true">Ai</span>
+      <span class="logo__tekst">Leksykon <b>AI</b></span>
+    </a>
+    <nav class="naglowek__nav" aria-label="Główna nawigacja">
+      {NAV.map((n) => <a href={url(n.cel)} aria-current={aktywny(n.cel)}>{n.nazwa}</a>)}
+    </nav>
+    <button type="button" class="szukaj-btn" data-otworz-szukaj aria-label="Szukaj hasła">
+      <Ikona nazwa="szukaj" />
+      <span class="szukaj-btn__tekst">Szukaj hasła…</span>
+      <kbd>/</kbd>
+    </button>
+    <a href={url('/dodaj/')} class="btn btn--glowny btn--maly naglowek__dodaj">
+      <Ikona nazwa="plus" /> Dodaj hasło
+    </a>
+    <button type="button" class="ikona-btn motyw" data-przelacz-motyw aria-label="Przełącz jasny/ciemny motyw">
+      <Ikona nazwa="ksiezyc" class="ikona--ciemny" />
+      <Ikona nazwa="slonce" class="ikona--jasny" />
+    </button>
+  </div>
+</header>

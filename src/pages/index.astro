@@ -1,0 +1,278 @@
+---
+import Baza from '../layouts/Baza.astro';
+import Ikona from '../components/Ikona.astro';
+import KartaHasla from '../components/KartaHasla.astro';
+import { wszystkieHasla, wszystkiePorownania, url, urlHasla } from '../lib/hasla';
+import { KATEGORIE, POPULARNE, STAN_NA } from '../data/taksonomia';
+import { zgloszenieUrl } from '../data/repo';
+import { ileHasel, wielka } from '../lib/tekst';
+
+const hasla = await wszystkieHasla();
+const mapa = new Map(hasla.map((h) => [h.id, h]));
+const porownania = await wszystkiePorownania();
+const popularne = POPULARNE.map((id) => mapa.get(id)).filter((h) => h !== undefined);
+const ostatnie = [...hasla]
+  .sort((a, b) => b.data.dodano.getTime() - a.data.dodano.getTime())
+  .slice(0, 6);
+const najnowszaData = ostatnie[0]?.data.dodano.getTime();
+const sameStartowe = ostatnie.every((h) => h.data.dodano.getTime() === najnowszaData);
+
+// Mapa pojęć — na podstawie podsumowania raportu źródłowego
+const WARSTWY = [
+  { nazwa: 'Silnik', opis: 'model, który generuje odpowiedzi', hasla: ['transformer', 'llm'] },
+  { nazwa: 'Co widzi', opis: 'materiał, na którym pracuje w danej chwili', hasla: ['token', 'context-window'] },
+  { nazwa: 'Skąd wie', opis: 'wiedza dostarczana spoza treningu', hasla: ['embedding', 'retrieval', 'rag'] },
+  { nazwa: 'Jak ma jej użyć', opis: 'instrukcje i dobór kontekstu', hasla: ['prompt-engineering', 'context-engineering'] },
+  { nazwa: 'Ręce', opis: 'połączenie ze światem zewnętrznym', hasla: ['function-calling', 'mcp'] },
+  { nazwa: 'Decyzje', opis: 'kto wybiera kolejne kroki', hasla: ['agent'] },
+  { nazwa: 'Kontrola', opis: 'sprawdzanie i pilnowanie zachowania', hasla: ['eval', 'guardrails', 'alignment'] },
+];
+const KULTURA = ['vibe-coding', 'ai-slop', 'doomer', 'ai-booster', 'brain-rot'];
+
+const lekkie = hasla.map((h) => ({ id: h.id, t: h.data.termin, p: h.data.pl, s: wielka(h.data.skrot), k: h.data.kategoria }));
+const dzien = Math.floor(Date.now() / 864e5);
+const dzisiejsze = hasla[dzien % hasla.length];
+---
+
+<Baza>
+  <section class="hero">
+    <div class="wrap">
+      <p class="hero__kicker">Leksykon AI · stan na {STAN_NA}</p>
+      <h1 class="hero__tytul">Język AI <span>po ludzku</span></h1>
+      <p class="hero__lead">
+        {ileHasel(hasla.length)} — od tokena do slopu. Technika, biznes, slang i memy, wyjaśnione po polsku, z przykładami użycia.
+      </p>
+      <button type="button" class="hero__szukaj" data-otworz-szukaj>
+        <Ikona nazwa="szukaj" />
+        <span>Szukaj hasła, np. <em>RAG</em>…</span>
+      </button>
+      <div class="chipy hero__chipy">
+        {
+          popularne.map((h) => (
+            <a class={`chip kat-${h.data.kategoria}`} href={urlHasla(h.id)}>
+              <span class="kropka" aria-hidden="true" />
+              {h.data.termin}
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <section class="sekcja" aria-labelledby="dzis">
+      <div class="sekcja__naglowek">
+        <h2 id="dzis">Hasło na dziś</h2>
+        <button type="button" class="link-wiecej" data-losuj><Ikona nazwa="losuj" /> Losuj inne</button>
+      </div>
+      <a href={urlHasla(dzisiejsze.id)} class={`karta dzis kat-${dzisiejsze.data.kategoria}`} data-dzis>
+        <span class="dzis__termin" data-t>{dzisiejsze.data.termin}</span>
+        <span class="dzis__pl" data-p>{dzisiejsze.data.pl}</span>
+        <span class="dzis__skrot" data-s>{wielka(dzisiejsze.data.skrot)}</span>
+        <span class="dzis__wiecej">Czytaj hasło <Ikona nazwa="strzalka" /></span>
+      </a>
+    </section>
+
+    <section class="sekcja" aria-labelledby="kategorie">
+      <div class="sekcja__naglowek">
+        <h2 id="kategorie">Kategorie</h2>
+        <a class="link-wiecej" href={url('/slownik/')}>Cały słownik <Ikona nazwa="strzalka" /></a>
+      </div>
+      <div class="siatka siatka--2 kategorie">
+        {
+          Object.entries(KATEGORIE).map(([id, k]) => (
+            <a href={url(`/slownik/?kat=${id}`)} class={`karta kategoria kat-${id}`}>
+              <span class="kategoria__gora">
+                <span class="kategoria__nazwa">{k.nazwa}</span>
+                <span class="kategoria__ile">{hasla.filter((h) => h.data.kategoria === id).length}</span>
+              </span>
+              <span class="kategoria__opis">{k.opis}</span>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="sekcja" aria-labelledby="mapa">
+      <div class="sekcja__naglowek">
+        <h2 id="mapa">Jak to się łączy</h2>
+      </div>
+      <p class="mapa__wstep">Jedna mapa pojęciowa nowoczesnej aplikacji AI — od silnika po kontrolę.</p>
+      <ol class="mapa">
+        {
+          WARSTWY.map((w, i) => (
+            <li class="mapa__warstwa">
+              <span class="mapa__nr" aria-hidden="true">{i + 1}</span>
+              <div class="mapa__tresc">
+                <p class="mapa__nazwa">
+                  <strong>{w.nazwa}</strong> — {w.opis}
+                </p>
+                <div class="chipy">
+                  {w.hasla.map((id) => mapa.get(id)).filter((h) => h !== undefined).map((h) => (
+                    <a class={`chip kat-${h.data.kategoria}`} href={urlHasla(h.id)}>
+                      <span class="kropka" aria-hidden="true" />
+                      {h.data.termin}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+      <div class="mapa__kultura">
+        <p class="mapa__nazwa"><strong>Nad tym wszystkim: kultura</strong> — jak technologia jest używana, sprzedawana i postrzegana</p>
+        <div class="chipy">
+          {
+            KULTURA.map((id) => mapa.get(id)).filter((h) => h !== undefined).map((h) => (
+              <a class={`chip kat-${h.data.kategoria}`} href={urlHasla(h.id)}>
+                <span class="kropka" aria-hidden="true" />
+                {h.data.termin}
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="sekcja" aria-labelledby="niemyl">
+      <div class="sekcja__naglowek">
+        <h2 id="niemyl">Nie myl!</h2>
+        <a class="link-wiecej" href={url('/nie-myl/')}>Wszystkie ({porownania.length}) <Ikona nazwa="strzalka" /></a>
+      </div>
+      <div class="siatka siatka--3">
+        {
+          porownania.slice(0, 3).map((p) => (
+            <a href={url(`/nie-myl/#${p.id}`)} class="karta niemyl">
+              <span class="niemyl__ikona"><Ikona nazwa="rozne" /></span>
+              <span class="niemyl__tytul">{p.data.tytul}</span>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    {
+      !sameStartowe && (
+        <section class="sekcja" aria-labelledby="nowe">
+          <div class="sekcja__naglowek">
+            <h2 id="nowe">Ostatnio dodane</h2>
+          </div>
+          <div class="siatka siatka--3">
+            {ostatnie.map((h) => <KartaHasla h={h} />)}
+          </div>
+        </section>
+      )
+    }
+
+    <section class="sekcja">
+      <div class="karta dodaj">
+        <h2>Brakuje jakiegoś hasła?</h2>
+        <p>
+          Leksykon tworzą czytelnicy. Wypełnij krótki formularz, a hasło trafi na stronę po akceptacji.
+          Bez programowania, wystarczy darmowe konto GitHub.
+        </p>
+        <div class="dodaj__akcje">
+          <a class="btn btn--glowny" href={url('/dodaj/')}><Ikona nazwa="plus" /> Dodaj hasło</a>
+          <a class="btn" href={zgloszenieUrl('nowe-haslo.yml')} rel="noopener"><Ikona nazwa="dymek" /> Tylko zaproponuj</a>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script type="application/json" id="hasla-lekkie" set:html={JSON.stringify(lekkie)} />
+  
+  <script>
+    import { adresHasla } from '../scripts/indeks';
+  
+    type L = { id: string; t: string; p: string; s: string; k: string };
+    const dane: L[] = JSON.parse(document.getElementById('hasla-lekkie')!.textContent!);
+    const karta = document.querySelector<HTMLAnchorElement>('[data-dzis]')!;
+  
+    function pokaz(h: L) {
+      karta.href = adresHasla(h.id);
+      karta.className = `karta dzis kat-${h.k}`;
+      karta.querySelector('[data-t]')!.textContent = h.t;
+      karta.querySelector('[data-p]')!.textContent = h.p;
+      karta.querySelector('[data-s]')!.textContent = h.s;
+    }
+  
+    // hasło dnia liczone w przeglądarce (strona jest statyczna)
+    pokaz(dane[Math.floor(Date.now() / 864e5) % dane.length]);
+    let ostatnie = '';
+    document.querySelector('[data-losuj]')!.addEventListener('click', () => {
+      let h;
+      do h = dane[Math.floor(Math.random() * dane.length)];
+      while (h.id === ostatnie && dane.length > 1);
+      ostatnie = h.id;
+      pokaz(h);
+    });
+  </script>
+</Baza>
+
+<style>
+  .hero { padding: 28px 0 8px; }
+  .hero__kicker { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); }
+  .hero__tytul {
+    font-family: var(--font-serif); font-size: clamp(2.5rem, 11vw, 4.2rem); font-weight: 700; line-height: 1.02;
+    letter-spacing: -0.02em; margin-top: 10px;
+  }
+  .hero__tytul span { color: var(--accent); font-style: italic; }
+  .hero__lead { color: var(--text-2); font-size: 1.1rem; margin-top: 14px; max-width: 36rem; }
+  .hero__szukaj {
+    display: flex; align-items: center; gap: 12px; width: 100%; max-width: 36rem; min-height: 58px; margin-top: 22px;
+    padding: 0 18px; border-radius: 16px; background: var(--surface); border: 1.5px solid var(--border-strong);
+    color: var(--text-3); font-size: 1.05rem; text-align: left; box-shadow: var(--shadow);
+  }
+  .hero__szukaj:hover { border-color: var(--accent); }
+  .hero__szukaj :global(.ikona) { color: var(--accent); width: 22px; height: 22px; }
+  .hero__szukaj em { font-style: normal; color: var(--text-2); }
+  .hero__chipy { margin-top: 16px; }
+
+  .dzis { display: grid; gap: 4px; border-left: 5px solid var(--kat); padding: 18px 18px 16px; }
+  .dzis__termin { font-family: var(--font-serif); font-size: 1.7rem; font-weight: 700; line-height: 1.15; }
+  .dzis__pl { color: var(--text-2); }
+  .dzis__skrot { font-size: 1.05rem; margin-top: 6px; }
+  .dzis__wiecej { display: inline-flex; align-items: center; gap: 6px; color: var(--accent); font-weight: 650; margin-top: 10px; font-size: 0.95rem; }
+  [data-losuj] { min-height: 44px; }
+
+  .kategoria { display: grid; gap: 4px; border-top: 4px solid var(--kat); }
+  .kategoria__gora { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .kategoria__nazwa { font-family: var(--font-serif); font-size: 1.2rem; font-weight: 650; }
+  .kategoria__ile { font-weight: 700; color: var(--kat); font-size: 1.1rem; }
+  .kategoria__opis { color: var(--text-2); font-size: 0.95rem; }
+  @media (min-width: 960px) { .kategorie { grid-template-columns: repeat(3, 1fr); } }
+
+  .mapa__wstep { color: var(--text-2); margin: -6px 0 16px; }
+  .mapa { list-style: none; padding: 0; position: relative; }
+  .mapa::before {
+    content: ''; position: absolute; left: 17px; top: 18px; bottom: 18px; width: 2px; background: var(--border);
+  }
+  .mapa__warstwa { display: grid; grid-template-columns: 36px 1fr; gap: 14px; padding-bottom: 18px; position: relative; }
+  .mapa__nr {
+    display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--surface);
+    border: 2px solid var(--accent); color: var(--accent); font-weight: 750; z-index: 1;
+  }
+  .mapa__tresc { display: grid; gap: 8px; padding-top: 5px; }
+  .mapa__nazwa { font-size: 1rem; color: var(--text-2); }
+  .mapa__nazwa strong { color: var(--text); font-weight: 700; }
+  .mapa__kultura {
+    display: grid; gap: 10px; padding: 16px; border-radius: var(--radius); border: 2px dashed var(--c-kultura-slang);
+    background: color-mix(in srgb, var(--c-kultura-slang) 6%, transparent);
+  }
+  @media (min-width: 900px) {
+    .mapa { display: grid; grid-template-columns: 1fr 1fr; column-gap: 32px; }
+    .mapa::before { display: none; }
+  }
+
+  .niemyl { display: flex; align-items: center; gap: 12px; min-height: 64px; }
+  .niemyl__ikona {
+    display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: var(--accent-soft); color: var(--accent); flex-shrink: 0;
+  }
+  .niemyl__tytul { font-weight: 650; }
+
+  .dodaj { padding: 22px 18px; background: var(--accent-soft); border-color: transparent; }
+  .dodaj h2 { font-family: var(--font-serif); font-size: 1.5rem; }
+  .dodaj p { color: var(--text-2); margin-top: 8px; max-width: 38rem; }
+  .dodaj__akcje { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+  @media (max-width: 480px) { .dodaj__akcje .btn { width: 100%; } }
+</style>

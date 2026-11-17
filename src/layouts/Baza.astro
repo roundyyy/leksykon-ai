@@ -1,0 +1,73 @@
+---
+import '@fontsource-variable/inter/wght.css';
+import '@fontsource-variable/inter/wght-italic.css';
+import '@fontsource-variable/source-serif-4/wght.css';
+import '../styles/global.css';
+import Naglowek from '../components/Naglowek.astro';
+import Stopka from '../components/Stopka.astro';
+import NawigacjaDolna from '../components/NawigacjaDolna.astro';
+import Wyszukiwarka from '../components/Wyszukiwarka.astro';
+import { url } from '../lib/hasla';
+
+interface Props {
+  tytul?: string;
+  opis?: string;
+}
+const {
+  tytul,
+  opis = 'Polski leksykon pojęć sztucznej inteligencji: technika, biznes, slang i memy. Od tokena do slopu — wyjaśnione po ludzku.',
+} = Astro.props;
+const pelnyTytul = tytul ? `${tytul} · Leksykon AI` : 'Leksykon AI — słownik sztucznej inteligencji po polsku';
+const kanoniczny = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{pelnyTytul}</title>
+    <meta name="description" content={opis} />
+    <link rel="canonical" href={kanoniczny} />
+    <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
+    <link rel="sitemap" href={url('/sitemap.xml')} />
+    <meta name="theme-color" content="#f7f5f0" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#111215" media="(prefers-color-scheme: dark)" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pl_PL" />
+    <meta property="og:site_name" content="Leksykon AI" />
+    <meta property="og:title" content={tytul ?? 'Leksykon AI'} />
+    <meta property="og:description" content={opis} />
+    <meta property="og:url" content={kanoniczny} />
+    <meta name="twitter:card" content="summary" />
+    <script is:inline>
+      try {
+        const t = localStorage.getItem('motyw');
+        if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#tresc">Przejdź do treści</a>
+    <Naglowek />
+    <main id="tresc">
+      <slot />
+    </main>
+    <Stopka />
+    <NawigacjaDolna />
+    <Wyszukiwarka />
+    <script>
+      document.querySelector('[data-przelacz-motyw]')?.addEventListener('click', () => {
+        const root = document.documentElement;
+        const ciemny = root.dataset.theme
+          ? root.dataset.theme === 'dark'
+          : matchMedia('(prefers-color-scheme: dark)').matches;
+        const nowy = ciemny ? 'light' : 'dark';
+        root.dataset.theme = nowy;
+        try {
+          localStorage.setItem('motyw', nowy);
+        } catch {}
+      });
+    </script>
+  </body>
+</html>

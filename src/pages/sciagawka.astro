@@ -1,0 +1,59 @@
+---
+import Baza from '../layouts/Baza.astro';
+import Ikona from '../components/Ikona.astro';
+import { wszystkieHasla, urlHasla } from '../lib/hasla';
+import { STAN_NA } from '../data/taksonomia';
+
+const hasla = await wszystkieHasla();
+---
+
+<Baza tytul="Ściągawka" opis="Wszystkie pojęcia AI w jednym zdaniu — ściągawka do szybkiego sprawdzenia i druku.">
+  <div class="wrap">
+    <div class="glowa">
+      <div>
+        <h1 class="tytul-strony">Ściągawka</h1>
+        <p class="lead">Gdy widzisz słowo z lewej, czytaj je mniej więcej jak to z prawej. Stan na {STAN_NA}.</p>
+      </div>
+      <button type="button" class="btn bez-druku" data-drukuj><Ikona nazwa="drukarka" /> Drukuj</button>
+    </div>
+
+    <dl class="sciaga">
+      {
+        hasla.map((h) => (
+          <div class={`sciaga__wiersz kat-${h.data.kategoria}`}>
+            <dt>
+              <span class="kropka" aria-hidden="true" />
+              <a href={urlHasla(h.id)}>{h.data.termin}</a>
+            </dt>
+            <dd>{h.data.skrot}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+  <script>
+    document.querySelector('[data-drukuj]')?.addEventListener('click', () => window.print());
+  </script>
+</Baza>
+
+<style>
+  .glowa { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+  .sciaga { margin-top: 22px; border-top: 1px solid var(--border); }
+  .sciaga__wiersz { display: grid; gap: 2px; padding: 12px 0; border-bottom: 1px solid var(--border); break-inside: avoid; }
+  .sciaga dt { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+  .sciaga dt a { text-decoration: none; }
+  .sciaga dt a:hover { text-decoration: underline; color: var(--accent); }
+  .sciaga dd { margin-left: 20px; color: var(--text-2); }
+  @media (min-width: 760px) {
+    .sciaga__wiersz { grid-template-columns: 240px 1fr; gap: 16px; align-items: baseline; }
+    .sciaga dd { margin-left: 0; }
+  }
+  @media print {
+    .tytul-strony { font-size: 18pt; }
+    .lead { font-size: 9pt; color: #444; }
+    .sciaga { columns: 2; column-gap: 24px; margin-top: 10px; border: 0; }
+    .sciaga__wiersz { display: block; padding: 4px 0; border-color: #ddd; }
+    .sciaga dd { margin: 0; color: #333; }
+    .kropka { display: none; }
+  }
+</style>

@@ -1,0 +1,24 @@
+---
+import Baza from '../layouts/Baza.astro';
+import Ikona from '../components/Ikona.astro';
+import { url } from '../lib/hasla';
+---
+
+<Baza tytul="Nie znaleziono strony">
+  <div class="wrap wrap--waski nf">
+    <p class="nf__kod">404</p>
+    <h1 class="tytul-strony">Ta strona zhalucynowała</h1>
+    <p class="lead">Nie ma tu nic — może hasło zmieniło adres albo jeszcze nie istnieje.</p>
+    <div class="nf__akcje">
+      <button type="button" class="btn btn--glowny" data-otworz-szukaj><Ikona nazwa="szukaj" /> Szukaj hasła</button>
+      <a class="btn" href={url('/slownik/')}><Ikona nazwa="ksiazka" /> Słownik A–Z</a>
+      <a class="btn" href={url('/dodaj/')}><Ikona nazwa="plus" /> Dodaj hasło</a>
+    </div>
+  </div>
+</Baza>
+
+<style>
+  .nf { padding-top: 40px; }
+  .nf__kod { font-family: var(--font-serif); font-size: 4rem; font-weight: 700; color: var(--accent); line-height: 1; }
+  .nf__akcje { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+</style>

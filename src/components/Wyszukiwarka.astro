@@ -1,0 +1,177 @@
+---
+import Ikona from './Ikona.astro';
+import { wszystkieHasla, url, urlHasla } from '../lib/hasla';
+import { POPULARNE } from '../data/taksonomia';
+
+const hasla = await wszystkieHasla();
+const popularne = POPULARNE.map((id) => hasla.find((h) => h.id === id)).filter((h) => h !== undefined);
+---
+
+<dialog id="szukaj" class="szukaj" aria-label="Wyszukiwarka haseł">
+  <div class="szukaj__panel">
+    <div class="szukaj__pasek">
+      <Ikona nazwa="szukaj" />
+      <input
+        id="szukaj-pole"
+        class="szukaj__pole"
+        type="search"
+        placeholder="Szukaj: RAG, halucynacja, token…"
+        autocomplete="off"
+        autocapitalize="off"
+        autocorrect="off"
+        spellcheck="false"
+        enterkeyhint="go"
+        role="combobox"
+        aria-expanded="false"
+        aria-controls="szukaj-wyniki"
+        aria-autocomplete="list"
+        aria-label="Szukaj hasła"
+      />
+      <button type="button" class="szukaj__zamknij" data-zamknij-szukaj>Anuluj</button>
+    </div>
+    <div class="szukaj__tresc">
+      <p class="sr-only" aria-live="polite" data-komunikat></p>
+      <ul id="szukaj-wyniki" class="szukaj__wyniki" role="listbox" aria-label="Wyniki"></ul>
+      <div class="szukaj__blok" data-start>
+        <h2>Popularne</h2>
+        <div class="chipy">
+          {
+            popularne.map((h) => (
+              <a class={`chip kat-${h.data.kategoria}`} href={urlHasla(h.id)}>
+                <span class="kropka" aria-hidden="true" />
+                {h.data.termin}
+              </a>
+            ))
+          }
+        </div>
+        <h2 style="margin-top:24px">Przeglądaj</h2>
+        <div class="chipy">
+          <a class="chip" href={url('/slownik/')}><Ikona nazwa="ksiazka" /> Słownik A–Z</a>
+          <a class="chip" href={url('/nie-myl/')}><Ikona nazwa="rozne" /> Nie myl!</a>
+          <a class="chip" href={url('/sciagawka/')}><Ikona nazwa="lista" /> Ściągawka</a>
+        </div>
+      </div>
+      <div class="szukaj__blok" data-pusto hidden>
+        <p style="margin-bottom:14px">Nie mamy jeszcze hasła <strong data-pusto-q></strong>.</p>
+        <a class="btn btn--glowny" data-pusto-dodaj href={url('/dodaj/')}><Ikona nazwa="plus" /> Dodaj to hasło</a>
+      </div>
+      <div class="szukaj__blok" data-blad hidden>
+        <p>Nie udało się wczytać wyszukiwarki. Sprawdź połączenie i spróbuj ponownie.</p>
+      </div>
+    </div>
+    <div class="szukaj__stopka" aria-hidden="true">
+      <span><kbd>↑</kbd> <kbd>↓</kbd> wybór</span>
+      <span><kbd>Enter</kbd> otwórz</span>
+      <span><kbd>Esc</kbd> zamknij</span>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  import { szukaj, zaladuj, adresHasla, adres } from '../scripts/indeks';
+  import { escapeHtml, wielka } from '../lib/tekst';
+
+  const dlg = document.getElementById('szukaj') as HTMLDialogElement;
+  const pole = document.getElementById('szukaj-pole') as HTMLInputElement;
+  const lista = document.getElementById('szukaj-wyniki') as HTMLUListElement;
+  const start = dlg.querySelector<HTMLElement>('[data-start]')!;
+  const pusto = dlg.querySelector<HTMLElement>('[data-pusto]')!;
+  const blad = dlg.querySelector<HTMLElement>('[data-blad]')!;
+  const komunikat = dlg.querySelector<HTMLElement>('[data-komunikat]')!;
+  let aktywny = -1;
+  let licznik = 0;
+
+  function otworz() {
+    if (!dlg.open) dlg.showModal();
+    pole.focus();
+    pole.select();
+    zaladuj().catch(() => {});
+  }
+
+  function zamknij() {
+    dlg.close();
+  }
+
+  function ustawAktywny(i: number) {
+    const el = [...lista.children] as HTMLElement[];
+    if (!el.length) return;
+    aktywny = (i + el.length) % el.length;
+    el.forEach((li, j) => li.setAttribute('aria-selected', String(j === aktywny)));
+    pole.setAttribute('aria-activedescendant', el[aktywny].id);
+    el[aktywny].scrollIntoView({ block: 'nearest' });
+  }
+
+  async function odswiez() {
+    const q = pole.value.trim();
+    const nr = ++licznik;
+    blad.hidden = true;
+    if (!q) {
+      lista.replaceChildren();
+      start.hidden = false;
+      pusto.hidden = true;
+      pole.setAttribute('aria-expanded', 'false');
+      return;
+    }
+    let wyniki;
+    try {
+      wyniki = await szukaj(q, 30);
+    } catch {
+      blad.hidden = false;
+      start.hidden = true;
+      return;
+    }
+    if (nr !== licznik) return; // nowsze zapytanie w toku
+    start.hidden = true;
+    pusto.hidden = wyniki.length > 0;
+    if (!wyniki.length) {
+      dlg.querySelector('[data-pusto-q]')!.textContent = `„${q}”`;
+      dlg.querySelector<HTMLAnchorElement>('[data-pusto-dodaj]')!.href = adres(`dodaj/?termin=${encodeURIComponent(q)}`);
+    }
+    lista.innerHTML = wyniki
+      .map(
+        (w, i) => `<li class="szukaj__wynik kat-${w.kategoria}" role="option" id="wynik-${i}" aria-selected="false">
+          <a href="${adresHasla(w.id)}">
+            <span class="kropka" aria-hidden="true"></span>
+            <span class="szukaj__wynik-termin">${escapeHtml(w.termin)}${w.rozwiniecie ? `<small>${escapeHtml(w.rozwiniecie)}</small>` : ''}</span>
+            <span class="szukaj__wynik-pl">${escapeHtml(w.pl)}</span>
+            <span class="szukaj__wynik-skrot">${escapeHtml(wielka(w.skrot))}</span>
+          </a></li>`,
+      )
+      .join('');
+    pole.setAttribute('aria-expanded', String(wyniki.length > 0));
+    pole.removeAttribute('aria-activedescendant');
+    aktywny = -1;
+    komunikat.textContent = wyniki.length ? `Wyniki: ${wyniki.length}` : 'Brak wyników';
+    if (wyniki.length && matchMedia('(pointer: fine)').matches) ustawAktywny(0);
+  }
+
+  pole.addEventListener('input', odswiez);
+  pole.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown') { e.preventDefault(); ustawAktywny(aktywny + 1); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); ustawAktywny(aktywny - 1); }
+    else if (e.key === 'Enter') {
+      e.preventDefault();
+      const cel = (lista.children[Math.max(aktywny, 0)] as HTMLElement | undefined)?.querySelector('a');
+      if (cel) location.href = cel.href;
+      else if (pole.value.trim()) location.href = adres(`slownik/?q=${encodeURIComponent(pole.value.trim())}`);
+    }
+  });
+
+  dlg.addEventListener('click', (e) => {
+    if (e.target === dlg) zamknij(); // kliknięcie w tło
+  });
+  dlg.querySelector('[data-zamknij-szukaj]')!.addEventListener('click', zamknij);
+
+  document.addEventListener('click', (e) => {
+    const t = (e.target as Element).closest('[data-otworz-szukaj]');
+    if (t) { e.preventDefault(); otworz(); }
+  });
+  document.addEventListener('keydown', (e) => {
+    const el = e.target as HTMLElement;
+    const pisze = el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName);
+    if ((e.key === 'k' && (e.ctrlKey || e.metaKey)) || (e.key === '/' && !pisze)) {
+      e.preventDefault();
+      otworz();
+    }
+  });
+</script>

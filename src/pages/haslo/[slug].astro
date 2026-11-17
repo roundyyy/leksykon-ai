@@ -1,0 +1,257 @@
+---
+import { render } from 'astro:content';
+import Baza from '../../layouts/Baza.astro';
+import Ikona from '../../components/Ikona.astro';
+import Odznaki from '../../components/Odznaki.astro';
+import { wszystkieHasla, wszystkiePorownania, powiazane, urlHasla, url, formatDaty, type Haslo } from '../../lib/hasla';
+import { edycjaUrl, zgloszenieUrl } from '../../data/repo';
+import { KATEGORIE } from '../../data/taksonomia';
+import { wielka } from '../../lib/tekst';
+
+export async function getStaticPaths() {
+  const hasla = await wszystkieHasla();
+  return hasla.map((h, i) => ({
+    params: { slug: h.id },
+    props: { h, poprzednie: hasla[i - 1], nastepne: hasla[i + 1] },
+  }));
+}
+
+interface Props {
+  h: Haslo;
+  poprzednie?: Haslo;
+  nastepne?: Haslo;
+}
+const { h, poprzednie, nastepne } = Astro.props;
+const d = h.data;
+const { Content } = await render(h);
+
+const hasla = await wszystkieHasla();
+const mapa = new Map(hasla.map((x) => [x.id, x]));
+const zwiazane = powiazane(h, hasla);
+const porownania = (await wszystkiePorownania()).filter((p) => p.data.hasla.includes(h.id));
+const renderPorownan = await Promise.all(porownania.map(async (p) => ({ p, ...(await render(p)) })));
+const aktualne = d.aktualne_na ?? d.dodano;
+---
+
+<Baza tytul={`${d.termin} — ${d.pl}`} opis={`${d.termin} (${d.pl}): ${d.skrot}.`}>
+  <article class={`wrap wrap--waski haslo kat-${d.kategoria}`}>
+    <nav class="okruszki bez-druku" aria-label="Ścieżka">
+      <a href={url('/slownik/')}>Słownik</a>
+      <span aria-hidden="true">/</span>
+      <a href={url(`/slownik/?kat=${d.kategoria}`)}>{KATEGORIE[d.kategoria].nazwa}</a>
+    </nav>
+
+    <header class="haslo__glowa">
+      <h1 class="haslo__termin">{d.termin}</h1>
+      {d.rozwiniecie && <p class="haslo__rozw">{d.rozwiniecie}</p>}
+      <p class="haslo__pl"><span>po polsku:</span> <strong>{d.pl}</strong></p>
+      {d.aliasy.length > 0 && <p class="haslo__aliasy">także: {d.aliasy.join(' · ')}</p>}
+      <Odznaki h={h} rejestr linki />
+    </header>
+
+    <p class="haslo__skrot"><span class="haslo__etykieta">W skrócie</span>{wielka(d.skrot)}</p>
+
+    <section class="proza haslo__definicja" aria-label="Definicja">
+      <Content />
+    </section>
+
+    {
+      d.przyklad && (
+        <figure class="haslo__przyklad">
+          <figcaption class="haslo__etykieta">Przykład użycia</figcaption>
+          <blockquote>„{d.przyklad}”</blockquote>
+        </figure>
+      )
+    }
+
+    {
+      renderPorownan.length > 0 && (
+        <section class="haslo__sekcja">
+          <h2 class="haslo__h2"><Ikona nazwa="rozne" /> Nie myl z…</h2>
+          <div class="siatka">
+            {renderPorownan.map(({ p, Content: Tresc }) => (
+              <div class="karta porownanie-mini">
+                <h3>
+                  <a href={url(`/nie-myl/#${p.id}`)}>{p.data.tytul}</a>
+                </h3>
+                <div class="proza porownanie-mini__tresc">
+                  <Tresc />
+                </div>
+                <div class="chipy">
+                  {p.data.hasla
+                    .filter((id) => id !== h.id && mapa.has(id))
+                    .map((id) => (
+                      <a class={`chip kat-${mapa.get(id)!.data.kategoria}`} href={urlHasla(id)}>
+                        <span class="kropka" aria-hidden="true" />
+                        {mapa.get(id)!.data.termin}
+                      </a>
+                    ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    {
+      zwiazane.length > 0 && (
+        <section class="haslo__sekcja">
+          <h2 class="haslo__h2"><Ikona nazwa="warstwy" /> Powiązane hasła</h2>
+          <ul class="powiazane">
+            {zwiazane.map((x) => (
+              <li>
+                <a href={urlHasla(x.id)} class={`powiazane__link kat-${x.data.kategoria}`}>
+                  <span class="kropka" aria-hidden="true" />
+                  <span>
+                    <strong>{x.data.termin}</strong>
+                    <span class="powiazane__skrot">{x.data.skrot}</span>
+                  </span>
+                  <Ikona nazwa="strzalka" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    {
+      d.zrodla.length > 0 && (
+        <section class="haslo__sekcja">
+          <h2 class="haslo__h2">Źródła</h2>
+          <ul class="zrodla">
+            {d.zrodla.map((z) => (
+              <li>
+                <a href={z.url} rel="noopener">{z.tytul}</a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    <footer class="haslo__stopka">
+      <p class="haslo__data">Aktualne na: {formatDaty(aktualne)}</p>
+      <div class="haslo__akcje bez-druku">
+        <button type="button" class="btn" data-udostepnij data-tytul={`${d.termin} — Leksykon AI`}>
+          <Ikona nazwa="udostepnij" /> Udostępnij
+        </button>
+        <a class="btn" href={edycjaUrl(h.id)} rel="noopener"><Ikona nazwa="olowek" /> Edytuj</a>
+        <a
+          class="btn"
+          href={zgloszenieUrl('poprawka.yml', { title: `[Poprawka] ${d.termin}`, haslo: d.termin })}
+          rel="noopener"><Ikona nazwa="flaga" /> Zgłoś błąd</a
+        >
+      </div>
+    </footer>
+
+    <nav class="sasiedzi bez-druku" aria-label="Sąsiednie hasła">
+      {
+        poprzednie ? (
+          <a href={urlHasla(poprzednie.id)} class="sasiedzi__link">
+            <span>
+              <Ikona nazwa="wstecz" /> Poprzednie
+            </span>
+            <strong>{poprzednie.data.termin}</strong>
+          </a>
+        ) : (
+          <span />
+        )
+      }
+      {
+        nastepne && (
+          <a href={urlHasla(nastepne.id)} class="sasiedzi__link sasiedzi__link--nast">
+            <span>
+              Następne <Ikona nazwa="strzalka" />
+            </span>
+            <strong>{nastepne.data.termin}</strong>
+          </a>
+        )
+      }
+    </nav>
+  </article>
+  <script>
+    document.querySelector<HTMLButtonElement>('[data-udostepnij]')?.addEventListener('click', async (e) => {
+      const btn = e.currentTarget as HTMLButtonElement;
+      const dane = { title: btn.dataset.tytul, url: location.href };
+      if (navigator.share) {
+        try { await navigator.share(dane); } catch {}
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(location.href);
+        const stary = btn.innerHTML;
+        btn.textContent = 'Skopiowano link ✓';
+        setTimeout(() => (btn.innerHTML = stary), 2000);
+      } catch {
+        prompt('Skopiuj link:', location.href);
+      }
+    });
+  </script>
+</Baza>
+
+<style>
+  .okruszki { display: flex; gap: 8px; font-size: 0.92rem; color: var(--text-3); margin-bottom: 14px; flex-wrap: wrap; }
+  .okruszki a { color: var(--text-2); text-decoration: none; padding-block: 4px; }
+  .okruszki a:hover { color: var(--text); text-decoration: underline; }
+
+  .haslo__glowa { display: grid; gap: 6px; padding-bottom: 18px; }
+  .haslo__termin {
+    font-family: var(--font-serif); font-size: clamp(2.1rem, 9vw, 3.1rem); font-weight: 700;
+    letter-spacing: -0.015em; line-height: 1.08; overflow-wrap: anywhere;
+  }
+  .haslo__rozw { font-family: var(--font-serif); font-size: 1.15rem; color: var(--text-2); font-style: italic; }
+  .haslo__pl { font-size: 1.1rem; margin-top: 4px; }
+  .haslo__pl span { color: var(--text-3); }
+  .haslo__aliasy { color: var(--text-2); font-size: 0.95rem; margin-bottom: 6px; }
+
+  .haslo__etykieta {
+    display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--kat); margin-bottom: 4px;
+  }
+  .haslo__skrot {
+    font-size: 1.15rem; font-weight: 550; line-height: 1.5; padding: 14px 16px; border-radius: var(--radius-s);
+    background: color-mix(in srgb, var(--kat) 9%, var(--surface)); border-left: 4px solid var(--kat);
+    margin-bottom: 22px;
+  }
+  .haslo__przyklad { margin-top: 26px; padding: 16px 18px; border-radius: var(--radius-s); background: var(--surface); border: 1px solid var(--border); }
+  .haslo__przyklad blockquote { font-family: var(--font-serif); font-size: 1.2rem; line-height: 1.5; font-style: italic; }
+
+  .haslo__sekcja { margin-top: 34px; }
+  .haslo__h2 { display: flex; align-items: center; gap: 8px; font-family: var(--font-serif); font-size: 1.35rem; font-weight: 650; margin-bottom: 12px; }
+  .haslo__h2 :global(.ikona) { color: var(--kat); }
+
+  .porownanie-mini h3 { font-size: 1.05rem; margin-bottom: 8px; }
+  .porownanie-mini h3 a { color: var(--accent); text-decoration: none; }
+  .porownanie-mini h3 a:hover { text-decoration: underline; }
+  .porownanie-mini__tresc { font-size: 0.98rem; margin-bottom: 12px; }
+
+  .powiazane { list-style: none; padding: 0; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); overflow: hidden; }
+  .powiazane li + li { border-top: 1px solid var(--border); }
+  .powiazane__link { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 12px 16px; text-decoration: none; min-height: 56px; }
+  .powiazane__link:hover { background: var(--surface-2); }
+  .powiazane__link > :global(.ikona) { color: var(--text-3); }
+  .powiazane__link strong { display: block; font-weight: 650; }
+  .powiazane__skrot { display: block; color: var(--text-2); font-size: 0.9rem; line-height: 1.4; }
+
+  .zrodla { padding-left: 1.2em; }
+  .zrodla a { color: var(--accent); overflow-wrap: anywhere; }
+
+  .haslo__stopka { margin-top: 36px; padding-top: 18px; border-top: 1px solid var(--border); display: grid; gap: 14px; }
+  .haslo__data { color: var(--text-3); font-size: 0.9rem; }
+  .haslo__akcje { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .haslo__akcje .btn:first-child { grid-column: 1 / -1; }
+  @media (min-width: 560px) {
+    .haslo__akcje { display: flex; flex-wrap: wrap; }
+  }
+
+  .sasiedzi { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 24px; }
+  .sasiedzi__link {
+    display: grid; gap: 2px; padding: 12px 14px; border-radius: var(--radius-s); border: 1px solid var(--border);
+    background: var(--surface); text-decoration: none; min-width: 0;
+  }
+  .sasiedzi__link span { display: inline-flex; align-items: center; gap: 4px; font-size: 0.82rem; color: var(--text-3); }
+  .sasiedzi__link strong { font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sasiedzi__link--nast { text-align: right; justify-items: end; grid-column: 2; }
+  .sasiedzi__link:hover { border-color: var(--border-strong); }
+</style>

@@ -1,0 +1,18 @@
+---
+import Ikona from './Ikona.astro';
+import { url } from '../lib/hasla';
+
+const sciezka = Astro.url.pathname;
+const jest = (cel: string) => (cel === '/' ? sciezka === url('/') : sciezka.startsWith(url(cel)));
+const cur = (cel: string) => (jest(cel) ? 'page' : undefined);
+---
+
+<nav class="dol" aria-label="Nawigacja">
+  <a class="dol__link" href={url('/')} aria-current={cur('/')}><Ikona nazwa="dom" />Start</a>
+  <a class="dol__link" href={url('/slownik/')} aria-current={cur('/slownik/')}><Ikona nazwa="ksiazka" />Słownik</a>
+  <button type="button" class="dol__link dol__link--szukaj" data-otworz-szukaj>
+    <span class="dol__ikona"><Ikona nazwa="szukaj" /></span>Szukaj
+  </button>
+  <a class="dol__link" href={url('/nie-myl/')} aria-current={cur('/nie-myl/')}><Ikona nazwa="rozne" />Nie myl!</a>
+  <a class="dol__link" href={url('/dodaj/')} aria-current={cur('/dodaj/')}><Ikona nazwa="plus" />Dodaj</a>
+</nav>
