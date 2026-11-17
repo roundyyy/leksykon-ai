@@ -1,0 +1,44 @@
+---
+import Ikona from './Ikona.astro';
+import { GITHUB_REJESTRACJA, LICENCJA, LICENCJA_URL } from '../data/repo';
+
+interface Props {
+  krotko?: boolean;
+}
+const { krotko = false } = Astro.props;
+---
+
+{
+  krotko ? (
+    <p class="konto-krotko">
+      Edycja i zgłoszenia wymagają darmowego konta na GitHubie.{' '}
+      <a href={GITHUB_REJESTRACJA} rel="noopener">Załóż konto</a>
+    </p>
+  ) : (
+    <div class="info konto">
+      <Ikona nazwa="info" />
+      <div>
+        <p>
+          <strong>Potrzebne jest darmowe konto na GitHubie.</strong> Bez niego nie da się dodać nowego hasła ani wprowadzić
+          zmian. Rejestracja zajmuje około 2 minut.
+        </p>
+        <p class="konto__akcje">
+          <a class="btn btn--maly" href={GITHUB_REJESTRACJA} rel="noopener"><Ikona nazwa="zewn" /> Załóż konto na GitHubie</a>
+        </p>
+        <p class="konto__licencja">
+          Hasła publikujemy na licencji <a href={LICENCJA_URL} rel="noopener license">{LICENCJA}</a>: każdy może z nich
+          korzystać, podając źródło.
+        </p>
+      </div>
+    </div>
+  )
+}
+
+<style>
+  .konto { align-items: flex-start; }
+  .konto p + p { margin-top: 8px; }
+  .konto__akcje .btn { color: var(--text); text-decoration: none; font-weight: 600; }
+  .konto__licencja { font-size: 0.9rem; color: var(--text-2); }
+  .konto-krotko { font-size: 0.88rem; color: var(--text-3); }
+  .konto-krotko a { color: var(--accent); font-weight: 600; }
+</style>

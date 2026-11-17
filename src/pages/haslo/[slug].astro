@@ -3,6 +3,7 @@ import { render } from 'astro:content';
 import Baza from '../../layouts/Baza.astro';
 import Ikona from '../../components/Ikona.astro';
 import Odznaki from '../../components/Odznaki.astro';
+import InfoKonto from '../../components/InfoKonto.astro';
 import { wszystkieHasla, wszystkiePorownania, powiazane, urlHasla, url, formatDaty, type Haslo } from '../../lib/hasla';
 import { edycjaUrl, zgloszenieUrl } from '../../data/repo';
 import { KATEGORIE } from '../../data/taksonomia';
@@ -157,6 +158,7 @@ const LIMIT = 8; // na telefonie dłuższa lista powiązań jest zwinięta
           rel="noopener"><Ikona nazwa="flaga" /> Zgłoś błąd</a
         >
       </div>
+      <div class="bez-druku"><InfoKonto krotko /></div>
     </footer>
 
     <nav class="sasiedzi bez-druku" aria-label="Sąsiednie hasła">
@@ -269,8 +271,12 @@ const LIMIT = 8; // na telefonie dłuższa lista powiązań jest zwinięta
     display: grid; gap: 2px; padding: 12px 14px; border-radius: var(--radius-s); border: 1px solid var(--border);
     background: var(--surface); text-decoration: none; min-width: 0;
   }
-  .sasiedzi__link span { display: inline-flex; align-items: center; gap: 4px; font-size: 0.82rem; color: var(--text-3); }
-  .sasiedzi__link strong { font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .sasiedzi__link--nast { text-align: right; justify-items: end; grid-column: 2; }
+  .sasiedzi__link span { display: flex; align-items: center; gap: 4px; font-size: 0.82rem; color: var(--text-3); }
+  .sasiedzi__link strong {
+    font-weight: 650; line-height: 1.3; overflow-wrap: anywhere;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .sasiedzi__link--nast { text-align: right; grid-column: 2; }
+  .sasiedzi__link--nast span { justify-content: flex-end; }
   .sasiedzi__link:hover { border-color: var(--border-strong); }
 </style>

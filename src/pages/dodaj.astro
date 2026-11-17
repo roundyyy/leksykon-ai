@@ -1,9 +1,10 @@
 ---
 import Baza from '../layouts/Baza.astro';
 import Ikona from '../components/Ikona.astro';
+import InfoKonto from '../components/InfoKonto.astro';
 import { wszystkieHasla, url } from '../lib/hasla';
 import { KATEGORIE, STATUSY, REJESTRY } from '../data/taksonomia';
-import { zgloszenieUrl } from '../data/repo';
+import { zgloszenieUrl, LICENCJA, LICENCJA_URL } from '../data/repo';
 
 const hasla = await wszystkieHasla();
 const istniejace = hasla.map((h) => ({ id: h.id, t: h.data.termin, a: h.data.aliasy }));
@@ -20,9 +21,11 @@ const nazwyKategorii = Object.fromEntries(Object.entries(KATEGORIE).map(([id, k]
       <li><span>2</span>Kliknij „Opublikuj na GitHubie”</li>
       <li><span>3</span>Na GitHubie zatwierdź zielonym przyciskiem</li>
     </ol>
+    <div class="konto-box"><InfoKonto /></div>
     <p class="pomoc-konto">
-      Potrzebujesz darmowego konta GitHub. Nie chcesz pisać całej definicji?
-      <a href={zgloszenieUrl('nowe-haslo.yml')} rel="noopener">Wystarczy zaproponować hasło</a>.
+      Nie chcesz pisać całej definicji?
+      <a href={zgloszenieUrl('nowe-haslo.yml')} rel="noopener">Wystarczy zaproponować hasło</a>
+      (też przez GitHuba).
     </p>
 
     <div class="info info--ok szkic" data-szkic hidden>
@@ -161,6 +164,10 @@ const nazwyKategorii = Object.fromEntries(Object.entries(KATEGORIE).map(([id, k]
             <button type="button" class="btn btn--pelny" data-kopiuj><Ikona nazwa="kopiuj" /> Kopiuj plik</button>
           </div>
           <p class="blad" data-blad-ogolny hidden></p>
+          <p class="zgoda">
+            Publikując hasło, zgadzasz się na jego udostępnienie na licencji
+            <a href={LICENCJA_URL} rel="noopener license">{LICENCJA}</a>.
+          </p>
 
           <div class="info info--ok wynik" data-wynik hidden>
             <Ikona nazwa="ok" />
@@ -493,7 +500,10 @@ const nazwyKategorii = Object.fromEntries(Object.entries(KATEGORIE).map(([id, k]
     font-size: 0.85rem; font-weight: 750; flex-shrink: 0;
   }
   @media (min-width: 760px) { .kroki { grid-template-columns: repeat(3, auto); justify-content: start; gap: 24px; } }
-  .pomoc-konto { color: var(--text-2); font-size: 0.95rem; margin-top: 14px; }
+  .konto-box { margin-top: 18px; }
+  .pomoc-konto { color: var(--text-2); font-size: 0.95rem; margin-top: 12px; }
+  .zgoda { font-size: 0.85rem; color: var(--text-3); margin-top: 10px; }
+  .zgoda a { color: var(--accent); }
   .pomoc-konto a { color: var(--accent); font-weight: 600; }
   .szkic { margin-top: 16px; }
   .link { color: inherit; font-weight: 650; text-decoration: underline; }

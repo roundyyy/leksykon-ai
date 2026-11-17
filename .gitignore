@@ -3,9 +3,10 @@ node_modules/
 dist/
 .astro/
 
-# pliki wewnętrzne — tylko lokalnie
+# pliki wewnętrzne: tylko lokalnie
 /PROJEKT.md
 /deep-research-report-*.md
+/*.txt
 /scripts/
 
 # system / edytor

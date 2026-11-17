@@ -6,6 +6,8 @@ Polski leksykon pojęć sztucznej inteligencji: technika, biznes, slang i memy.
 
 ## Jak dodać hasło
 
+Potrzebne jest darmowe [konto na GitHubie](https://github.com/signup); bez niego nie da się dodawać ani zmieniać haseł.
+
 - **Najprościej:** formularz [Dodaj hasło](https://roundyyy.github.io/leksykon-ai/dodaj/) przygotuje plik i otworzy GitHuba; zostaje kliknąć „Commit changes”.
 - **Tylko pomysł:** [zaproponuj hasło](https://github.com/roundyyy/leksykon-ai/issues/new?template=nowe-haslo.yml).
 - **Poprawka:** przycisk „Edytuj” lub „Zgłoś błąd” na dole każdego hasła.
@@ -31,6 +33,10 @@ dodano: 2026-11-17
 ---
 Pełna definicja w Markdownie…
 ```
+
+## Licencja
+
+Treść leksykonu (hasła i porównania w `src/content/`) jest udostępniona na licencji [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.pl) (plik [LICENSE](LICENSE)). Dodając lub poprawiając hasło, zgadzasz się na publikację na tej licencji.
 
 ## Uruchomienie lokalne (opcjonalne)
 

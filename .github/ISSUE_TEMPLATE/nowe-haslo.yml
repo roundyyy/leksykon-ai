@@ -6,6 +6,8 @@ body:
     attributes:
       value: |
         Dzięki! Wystarczy termin i kilka słów wyjaśnienia. Jeśli chcesz od razu napisać całe hasło, skorzystaj z formularza na stronie: https://roundyyy.github.io/leksykon-ai/dodaj/
+
+        Wysyłając propozycję, zgadzasz się na publikację jej treści na licencji CC BY 4.0.
   - type: input
     id: termin
     attributes:

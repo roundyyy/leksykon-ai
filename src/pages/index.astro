@@ -4,7 +4,7 @@ import Ikona from '../components/Ikona.astro';
 import KartaHasla from '../components/KartaHasla.astro';
 import { wszystkieHasla, wszystkiePorownania, url, urlHasla } from '../lib/hasla';
 import { KATEGORIE, POPULARNE, STAN_NA } from '../data/taksonomia';
-import { zgloszenieUrl } from '../data/repo';
+import { zgloszenieUrl, GITHUB_REJESTRACJA } from '../data/repo';
 import { ileHasel, wielka } from '../lib/tekst';
 
 const hasla = await wszystkieHasla();
@@ -170,7 +170,8 @@ const dzisiejsze = hasla[dzien % hasla.length];
         <h2>Brakuje jakiegoś hasła?</h2>
         <p>
           Leksykon tworzą czytelnicy. Wypełnij krótki formularz, a hasło trafi na stronę po akceptacji.
-          Bez programowania, wystarczy darmowe konto GitHub.
+          Bez programowania; potrzebne jest tylko darmowe konto na GitHubie
+          (<a href={GITHUB_REJESTRACJA} rel="noopener">załóż je tutaj</a>).
         </p>
         <div class="dodaj__akcje">
           <a class="btn btn--glowny" href={url('/dodaj/')}><Ikona nazwa="plus" /> Dodaj hasło</a>
@@ -273,6 +274,7 @@ const dzisiejsze = hasla[dzien % hasla.length];
   .dodaj { padding: 22px 18px; background: var(--accent-soft); border-color: transparent; }
   .dodaj h2 { font-family: var(--font-serif); font-size: 1.5rem; }
   .dodaj p { color: var(--text-2); margin-top: 8px; max-width: 38rem; }
+  .dodaj p a { color: var(--accent); font-weight: 600; }
   .dodaj__akcje { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
   @media (max-width: 480px) { .dodaj__akcje .btn { width: 100%; } }
 </style>

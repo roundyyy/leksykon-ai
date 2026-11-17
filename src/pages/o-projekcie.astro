@@ -3,7 +3,7 @@ import Baza from '../layouts/Baza.astro';
 import Ikona from '../components/Ikona.astro';
 import { wszystkieHasla, url } from '../lib/hasla';
 import { KATEGORIE, STATUSY, REJESTRY, STAN_NA } from '../data/taksonomia';
-import { REPO_URL, zgloszenieUrl } from '../data/repo';
+import { REPO_URL, zgloszenieUrl, GITHUB_REJESTRACJA, LICENCJA, LICENCJA_URL } from '../data/repo';
 import { ileHasel } from '../lib/tekst';
 
 const hasla = await wszystkieHasla();
@@ -68,7 +68,12 @@ const hasla = await wszystkieHasla();
     </dl>
 
     <h2 id="wspoltworzenie">Jak dodać lub poprawić hasło</h2>
-    <p>Leksykon jest otwarty: każdy może zaproponować nowe hasło albo poprawkę. Potrzebne jest tylko darmowe konto na GitHubie.</p>
+    <p>Leksykon jest otwarty: każdy może zaproponować nowe hasło albo poprawkę.</p>
+    <p>
+      <strong>Potrzebne jest darmowe konto na GitHubie</strong>; bez niego nie da się dodać hasła, edytować ani zgłosić
+      błędu. <a href={GITHUB_REJESTRACJA} rel="noopener">Załóż konto</a> (około 2 minut), a potem wybierz jeden ze
+      sposobów:
+    </p>
     <ol>
       <li>
         <strong>Formularz na stronie:</strong> <a href={url('/dodaj/')}>Dodaj hasło</a>. Wypełniasz pola, a strona przygotowuje
@@ -85,6 +90,15 @@ const hasla = await wszystkieHasla();
     <p>
       Każda zmiana jest automatycznie sprawdzana. Hasła od osób spoza zespołu pojawiają się na stronie po akceptacji,
       zwykle w ciągu kilku dni.
+    </p>
+
+    <h2 id="licencja">Licencja</h2>
+    <p>
+      Treść leksykonu (hasła i porównania) jest udostępniona na licencji
+      <a href={LICENCJA_URL} rel="noopener license">Creative Commons Uznanie autorstwa 4.0 ({LICENCJA})</a>. Możesz ją
+      kopiować, cytować i przerabiać, także komercyjnie, pod warunkiem podania źródła, np. „Leksykon AI,
+      roundyyy.github.io/leksykon-ai”. Dodając lub poprawiając hasło, zgadzasz się na jego publikację na tej samej
+      licencji.
     </p>
 
     <h2>Źródła i rzetelność</h2>

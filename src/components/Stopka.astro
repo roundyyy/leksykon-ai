@@ -1,6 +1,6 @@
 ---
 import { url } from '../lib/hasla';
-import { REPO_URL, zgloszenieUrl } from '../data/repo';
+import { REPO_URL, zgloszenieUrl, LICENCJA, LICENCJA_URL } from '../data/repo';
 import { STAN_NA } from '../data/taksonomia';
 ---
 
@@ -15,6 +15,9 @@ import { STAN_NA } from '../data/taksonomia';
       <a href={url('/o-projekcie/')}>O projekcie</a>
       <a href={REPO_URL}>Kod na GitHubie</a>
     </div>
-    <small>Leksykon AI · stan wiedzy na {STAN_NA} · współtworzony przez czytelników</small>
+    <small>
+      Leksykon AI · stan wiedzy na {STAN_NA} · współtworzony przez czytelników · treść na licencji
+      <a href={LICENCJA_URL} rel="noopener license">{LICENCJA}</a>
+    </small>
   </div>
 </footer>

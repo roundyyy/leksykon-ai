@@ -2,6 +2,9 @@ name: Zgłoś błąd w haśle
 description: Coś jest nieaktualne, nieprecyzyjne albo po prostu błędne?
 title: "[Poprawka] "
 body:
+  - type: markdown
+    attributes:
+      value: Wysyłając poprawkę, zgadzasz się na publikację jej treści na licencji CC BY 4.0.
   - type: input
     id: haslo
     attributes:

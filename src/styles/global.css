@@ -263,6 +263,7 @@ main { padding-block: 20px 40px; }
 .stopka a { color: var(--text-2); text-decoration: none; padding-block: 6px; display: inline-block; }
 .stopka a:hover { color: var(--text); text-decoration: underline; }
 .stopka small { color: var(--text-3); font-size: 0.85rem; }
+.stopka small a { color: inherit; text-decoration: underline; padding: 0; }
 
 /* ---- odznaki ---- */
 .odznaki { display: flex; flex-wrap: wrap; gap: 6px; }
