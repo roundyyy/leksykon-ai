@@ -15,7 +15,7 @@ const ALFABET = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
 const liczba = (kat: string) => hasla.filter((h) => h.data.kategoria === kat).length;
 ---
 
-<Baza tytul="Słownik A–Z" opis={`Wszystkie hasła Leksykonu AI (${ileHasel(hasla.length)}) — szukaj, filtruj po kategorii i statusie.`}>
+<Baza tytul="Słownik A-Z" opis={`Wszystkie hasła Leksykonu AI (${ileHasel(hasla.length)}): szukaj, filtruj po kategorii i statusie.`}>
   <div class="wrap">
     <h1 class="tytul-strony">Słownik</h1>
     <p class="lead">{ileHasel(hasla.length)} od A do Z. Wpisz, czego szukasz, albo zawęź listę filtrami.</p>

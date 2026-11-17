@@ -15,6 +15,6 @@ dodano: 2026-11-17
 aktualne_na: 2026-11-17
 ---
 
-Skrót od **effective accelerationism** — **efektywny akceleracjonizm**. Luźny ruch intelektualno-internetowy opowiadający się za szybkim rozwojem technologii, w tym AI, i sceptyczny wobec prób radykalnego spowalniania postępu.
+Skrót od **effective accelerationism** - **efektywny akceleracjonizm**. Luźny ruch intelektualno-internetowy opowiadający się za szybkim rozwojem technologii, w tym AI, i sceptyczny wobec prób radykalnego spowalniania postępu.
 
 Często przeciwstawiane *AI doomers* i *decels*.

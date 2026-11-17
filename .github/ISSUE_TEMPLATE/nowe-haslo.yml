@@ -1,5 +1,5 @@
 name: Zaproponuj hasło
-description: Brakuje jakiegoś pojęcia? Zgłoś je — nie musisz pisać pełnej definicji.
+description: Brakuje jakiegoś pojęcia? Zgłoś je; nie musisz pisać pełnej definicji.
 title: "[Nowe hasło] "
 body:
   - type: markdown
@@ -42,8 +42,9 @@ body:
         - Trening i optymalizacja
         - Prompty, RAG i agenci
         - Bezpieczeństwo i kontrola
+        - Biznes, prawo i praca
   - type: input
     id: zrodlo
     attributes:
       label: Gdzie to słowo spotkałeś/spotkałaś?
-      description: Link do artykułu, posta, dokumentacji — pomaga zweryfikować hasło.
+      description: Link do artykułu, posta, dokumentacji; pomaga zweryfikować hasło.

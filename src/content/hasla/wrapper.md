@@ -16,4 +16,4 @@ aktualne_na: 2026-11-17
 
 Aplikacja, której istotna część wartości polega na wykorzystaniu istniejącego modelu innej firmy i dodaniu interfejsu, promptów, danych lub workflow. Często używane lekceważąco: „to tylko wrapper na OpenAI/Anthropic”.
 
-Sam fakt używania modelu przez API nie oznacza, że produkt nie może mieć dużej wartości — termin mówi o architekturze, a w użyciu potocznym bywa oceną biznesową.
+Sam fakt używania modelu przez API nie oznacza, że produkt nie może mieć dużej wartości - termin mówi o architekturze, a w użyciu potocznym bywa oceną biznesową.

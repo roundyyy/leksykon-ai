@@ -3,7 +3,7 @@ termin: AI washing
 aliasy: [AI-washing]
 pl: pozorowanie lub wyolbrzymianie użycia AI
 skrot: wyolbrzymianie lub udawanie użycia AI
-kategoria: kultura-slang
+kategoria: biznes-prawo
 rejestr: [biznesowy, prawny]
 status: utrwalony
 przyklad: "To wygląda na AI washing: zwykły system reguł sprzedają jako zaawansowaną sztuczną inteligencję."

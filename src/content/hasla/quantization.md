@@ -14,6 +14,6 @@ dodano: 2026-11-17
 aktualne_na: 2026-11-17
 ---
 
-Reprezentowanie wag, aktywacji lub innych wartości z mniejszą precyzją liczbową — np. zamiast 16 bitów używanie 8 lub 4 — aby zmniejszyć pamięć i często przyspieszyć inferencję, zwykle kosztem pewnego ryzyka utraty jakości.
+Reprezentowanie wag, aktywacji lub innych wartości z mniejszą precyzją liczbową - np. zamiast 16 bitów używanie 8 lub 4 - aby zmniejszyć pamięć i często przyspieszyć inferencję, zwykle kosztem pewnego ryzyka utraty jakości.
 
 Kwantyzacja jest standardową klasą technik optymalizacji inferencji Transformerów.

@@ -49,7 +49,7 @@ export function zaladuj() {
   return ladowanie;
 }
 
-/** Zwraca hasła pasujące do zapytania — dokładne trafienia w nazwę/alias na początku. */
+/** Zwraca hasła pasujące do zapytania; dokładne trafienia w nazwę/alias na początku. */
 export async function szukaj(q: string, limit = 60): Promise<Wpis[]> {
   const fq = fold(q.trim());
   if (!fq) return [];

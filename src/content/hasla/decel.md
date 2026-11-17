@@ -14,6 +14,6 @@ dodano: 2026-11-17
 aktualne_na: 2026-11-17
 ---
 
-Skrót od **decelerationist** — osoba opowiadająca się za spowolnieniem części rozwoju AI. Zwykle używane polemicznie przez zwolenników przyspieszania rozwoju technologii.
+Skrót od **decelerationist** - osoba opowiadająca się za spowolnieniem części rozwoju AI. Zwykle używane polemicznie przez zwolenników przyspieszania rozwoju technologii.
 
 Powiązane: *e/acc*, *doomer*.

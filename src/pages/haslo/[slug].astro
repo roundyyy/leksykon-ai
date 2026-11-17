@@ -31,9 +31,10 @@ const zwiazane = powiazane(h, hasla);
 const porownania = (await wszystkiePorownania()).filter((p) => p.data.hasla.includes(h.id));
 const renderPorownan = await Promise.all(porownania.map(async (p) => ({ p, ...(await render(p)) })));
 const aktualne = d.aktualne_na ?? d.dodano;
+const LIMIT = 8; // na telefonie dłuższa lista powiązań jest zwinięta
 ---
 
-<Baza tytul={`${d.termin} — ${d.pl}`} opis={`${d.termin} (${d.pl}): ${d.skrot}.`}>
+<Baza tytul={`${d.termin}: ${d.pl}`} opis={`${d.termin} (${d.pl}): ${d.skrot}.`}>
   <article class={`wrap wrap--waski haslo kat-${d.kategoria}`}>
     <nav class="okruszki bez-druku" aria-label="Ścieżka">
       <a href={url('/slownik/')}>Słownik</a>
@@ -98,20 +99,32 @@ const aktualne = d.aktualne_na ?? d.dodano;
       zwiazane.length > 0 && (
         <section class="haslo__sekcja">
           <h2 class="haslo__h2"><Ikona nazwa="warstwy" /> Powiązane hasła</h2>
-          <ul class="powiazane">
-            {zwiazane.map((x) => (
-              <li>
-                <a href={urlHasla(x.id)} class={`powiazane__link kat-${x.data.kategoria}`}>
-                  <span class="kropka" aria-hidden="true" />
-                  <span>
-                    <strong>{x.data.termin}</strong>
-                    <span class="powiazane__skrot">{x.data.skrot}</span>
-                  </span>
-                  <Ikona nazwa="strzalka" />
-                </a>
-              </li>
-            ))}
-          </ul>
+          {[zwiazane.slice(0, LIMIT), zwiazane.slice(LIMIT)].map((czesc, i) =>
+            czesc.length === 0 ? null : (
+              <Fragment>
+                {i === 1 && <input type="checkbox" id="wiecej-powiazanych" class="wiecej__przelacznik sr-only" />}
+                <ul class={i === 0 ? 'powiazane' : 'powiazane powiazane--reszta'}>
+                  {czesc.map((x) => (
+                    <li>
+                      <a href={urlHasla(x.id)} class={`powiazane__link kat-${x.data.kategoria}`}>
+                        <span class="kropka" aria-hidden="true" />
+                        <span>
+                          <strong>{x.data.termin}</strong>
+                          <span class="powiazane__skrot">{x.data.skrot}</span>
+                        </span>
+                        <Ikona nazwa="strzalka" />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+                {i === 1 && (
+                  <label for="wiecej-powiazanych" class="btn btn--maly wiecej__btn">
+                    Pokaż jeszcze {czesc.length}
+                  </label>
+                )}
+              </Fragment>
+            ),
+          )}
         </section>
       )
     }
@@ -134,7 +147,7 @@ const aktualne = d.aktualne_na ?? d.dodano;
     <footer class="haslo__stopka">
       <p class="haslo__data">Aktualne na: {formatDaty(aktualne)}</p>
       <div class="haslo__akcje bez-druku">
-        <button type="button" class="btn" data-udostepnij data-tytul={`${d.termin} — Leksykon AI`}>
+        <button type="button" class="btn" data-udostepnij data-tytul={`${d.termin} · Leksykon AI`}>
           <Ikona nazwa="udostepnij" /> Udostępnij
         </button>
         <a class="btn" href={edycjaUrl(h.id)} rel="noopener"><Ikona nazwa="olowek" /> Edytuj</a>
@@ -182,7 +195,7 @@ const aktualne = d.aktualne_na ?? d.dodano;
       try {
         await navigator.clipboard.writeText(location.href);
         const stary = btn.innerHTML;
-        btn.textContent = 'Skopiowano link ✓';
+        btn.textContent = 'Skopiowano link';
         setTimeout(() => (btn.innerHTML = stary), 2000);
       } catch {
         prompt('Skopiuj link:', location.href);
@@ -233,6 +246,12 @@ const aktualne = d.aktualne_na ?? d.dodano;
   .powiazane__link > :global(.ikona) { color: var(--text-3); }
   .powiazane__link strong { display: block; font-weight: 650; }
   .powiazane__skrot { display: block; color: var(--text-2); font-size: 0.9rem; line-height: 1.4; }
+
+  .powiazane--reszta { display: none; margin-top: 8px; }
+  .wiecej__przelacznik:checked + .powiazane--reszta { display: block; }
+  .wiecej__przelacznik:checked ~ .wiecej__btn { display: none; }
+  .wiecej__przelacznik:focus-visible ~ .wiecej__btn { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .wiecej__btn { margin-top: 10px; }
 
   .zrodla { padding-left: 1.2em; }
   .zrodla a { color: var(--accent); overflow-wrap: anywhere; }

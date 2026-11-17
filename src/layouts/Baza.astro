@@ -15,9 +15,9 @@ interface Props {
 }
 const {
   tytul,
-  opis = 'Polski leksykon pojęć sztucznej inteligencji: technika, biznes, slang i memy. Od tokena do slopu — wyjaśnione po ludzku.',
+  opis = 'Polski leksykon pojęć sztucznej inteligencji: technika, biznes, slang i memy. Od tokena do slopu, wyjaśnione po ludzku.',
 } = Astro.props;
-const pelnyTytul = tytul ? `${tytul} · Leksykon AI` : 'Leksykon AI — słownik sztucznej inteligencji po polsku';
+const pelnyTytul = tytul ? `${tytul} · Leksykon AI` : 'Leksykon AI: słownik sztucznej inteligencji po polsku';
 const kanoniczny = new URL(Astro.url.pathname, Astro.site);
 ---
 

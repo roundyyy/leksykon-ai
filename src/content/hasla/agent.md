@@ -14,6 +14,6 @@ dodano: 2026-11-17
 aktualne_na: 2026-11-17
 ---
 
-System oparty na modelu, który nie tylko odpowiada tekstem, lecz sam wybiera kolejne działania i używa narzędzi — np. przeglądarki, kodu, API czy poczty — aby zrealizować cel użytkownika. Definicja nie jest jeszcze w pełni ustalona.
+System oparty na modelu, który nie tylko odpowiada tekstem, lecz sam wybiera kolejne działania i używa narzędzi - np. przeglądarki, kodu, API czy poczty - aby zrealizować cel użytkownika. Definicja nie jest jeszcze w pełni ustalona.
 
 Anthropic definiuje roboczo agentów jako systemy wyposażone w narzędzia umożliwiające podejmowanie działań; w innej pracy podkreśla, że agent sam kieruje własnym procesem i doborem narzędzi.

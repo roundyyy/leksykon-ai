@@ -13,4 +13,4 @@ dodano: 2026-11-17
 aktualne_na: 2026-11-17
 ---
 
-Projektowanie instrukcji, przykładów i formatu wejścia tak, aby model wiarygodniej wykonywał zadanie. W 2023–24 termin bywał używany bardzo szeroko; wraz z rozwojem agentów część branży przeniosła akcent na szersze *context engineering*.
+Projektowanie instrukcji, przykładów i formatu wejścia tak, aby model wiarygodniej wykonywał zadanie. W 2023-24 termin bywał używany bardzo szeroko; wraz z rozwojem agentów część branży przeniosła akcent na szersze *context engineering*.

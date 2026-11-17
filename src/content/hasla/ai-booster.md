@@ -7,7 +7,7 @@ kategoria: kultura-slang
 rejestr: [publicystyczny, slang]
 status: utrwalony
 status_uwagi: "utrwalony, ale nieostry"
-przyklad: "On jest raczej AI boosterem — uważa, że ryzyko jest wyolbrzymiane."
+przyklad: "On jest raczej AI boosterem - uważa, że ryzyko jest wyolbrzymiane."
 powiazane: [doomer, decel, e-acc]
 zrodla: []
 dodano: 2026-11-17

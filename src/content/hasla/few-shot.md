@@ -6,7 +6,7 @@ skrot: prompt z kilkoma przykładami oczekiwanego wyniku
 kategoria: prompty-agenci
 rejestr: [techniczny]
 status: utrwalony
-przyklad: Dodaj trzy poprawne przykłady klasyfikacji — to few-shot.
+przyklad: Dodaj trzy poprawne przykłady klasyfikacji - to few-shot.
 powiazane: [zero-shot, in-context-learning]
 zrodla: []
 dodano: 2026-11-17

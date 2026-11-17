@@ -2,11 +2,11 @@
 termin: context engineering
 aliasy: []
 pl: inżynieria kontekstu
-skrot: "projektowanie wszystkiego, co model ma w kontekście — nie tylko promptu"
+skrot: "projektowanie wszystkiego, co model ma w kontekście - nie tylko promptu"
 kategoria: prompty-agenci
 rejestr: [techniczny]
 status: nowy
-status_uwagi: rosnąco utrwalony od 2025–26
+status_uwagi: rosnąco utrwalony od 2025-26
 przyklad: "Problemem nie jest prompt, tylko context engineering: model dostaje za dużo nieistotnych danych."
 powiazane: [prompt-engineering, context-window, memory, retrieval]
 zrodla: []

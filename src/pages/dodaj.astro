@@ -10,10 +10,10 @@ const istniejace = hasla.map((h) => ({ id: h.id, t: h.data.termin, a: h.data.ali
 const nazwyKategorii = Object.fromEntries(Object.entries(KATEGORIE).map(([id, k]) => [id, k.nazwa]));
 ---
 
-<Baza tytul="Dodaj hasło" opis="Dodaj nowe hasło do Leksykonu AI — bez programowania, przez prosty formularz.">
+<Baza tytul="Dodaj hasło" opis="Dodaj nowe hasło do Leksykonu AI bez programowania, przez prosty formularz.">
   <div class="wrap">
     <h1 class="tytul-strony">Dodaj hasło</h1>
-    <p class="lead">Wypełnij formularz — przygotujemy gotowy plik i otworzymy GitHuba. Ty klikasz tylko „Commit changes”.</p>
+    <p class="lead">Wypełnij formularz, a my przygotujemy gotowy plik i otworzymy GitHuba. Ty klikasz tylko „Commit changes”.</p>
 
     <ol class="kroki">
       <li><span>1</span>Wypełnij pola poniżej</li>
@@ -37,7 +37,7 @@ const nazwyKategorii = Object.fromEntries(Object.entries(KATEGORIE).map(([id, k]
           <div class="pole">
             <label for="termin">Termin <abbr title="wymagane">*</abbr></label>
             <input class="input" id="termin" name="termin" required autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="np. context rot" aria-describedby="termin-pomoc termin-blad" />
-            <p class="pomoc" id="termin-pomoc">Tak, jak się go używa — zwykle po angielsku. Adres hasła: <code data-slug>/haslo/…/</code></p>
+            <p class="pomoc" id="termin-pomoc">Tak, jak się go używa (zwykle po angielsku). Adres hasła: <code data-slug>/haslo/…/</code></p>
             <p class="blad" id="termin-blad" data-blad-dla="termin" hidden></p>
             <div class="info info--uwaga" data-duplikat hidden></div>
           </div>
@@ -169,10 +169,10 @@ const nazwyKategorii = Object.fromEntries(Object.entries(KATEGORIE).map(([id, k]
               <ol>
                 <li>Kliknij zielony przycisk <strong>Commit changes…</strong> (albo <strong>Propose changes</strong>, jeśli nie jesteś właścicielem).</li>
                 <li>W okienku zatwierdź jeszcze raz.</li>
-                <li>Hasło pojawi się na stronie po 1–2 minutach (propozycje — po akceptacji).</li>
+                <li>Hasło pojawi się na stronie po 1-2 minutach (propozycje: po akceptacji).</li>
               </ol>
               <p class="wynik__mala">Jeśli otworzyła się aplikacja GitHub i nie widzisz edytora, otwórz link w przeglądarce.</p>
-              <p class="wynik__mala" data-wynik-wklej hidden><strong>Hasło było za długie na link</strong> — treść jest w schowku: wklej ją w edytorze GitHuba.</p>
+              <p class="wynik__mala" data-wynik-wklej hidden><strong>Hasło było za długie na link</strong>: treść jest w schowku: wklej ją w edytorze GitHuba.</p>
             </div>
           </div>
 
@@ -225,7 +225,7 @@ const nazwyKategorii = Object.fromEntries(Object.entries(KATEGORIE).map(([id, k]
       w.innerHTML = `
         <input class="input" data-z-tytul placeholder="Tytuł, np. Raport NIST" autocomplete="off" aria-label="Tytuł źródła">
         <input class="input" data-z-url type="url" inputmode="url" placeholder="https://…" autocomplete="off" aria-label="Adres źródła">
-        <button type="button" class="ikona-btn" aria-label="Usuń źródło" data-usun>✕</button>`;
+        <button type="button" class="ikona-btn" aria-label="Usuń źródło" data-usun><svg class="ikona" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>`;
       (w.querySelector('[data-z-tytul]') as HTMLInputElement).value = tytul;
       (w.querySelector('[data-z-url]') as HTMLInputElement).value = adres;
       w.querySelector('[data-usun]')!.addEventListener('click', () => { w.remove(); odswiez(); });
@@ -249,7 +249,7 @@ const nazwyKategorii = Object.fromEntries(Object.entries(KATEGORIE).map(([id, k]
     const bladPow = $('[data-blad-powiazane]');
     function rysujPowiazane() {
       chipyPow.innerHTML = powiazane
-        .map((id) => `<button type="button" class="chip" data-usun-pow="${id}" aria-label="Usuń ${escapeHtml(poId.get(id)!.t)}">${escapeHtml(poId.get(id)!.t)} <span aria-hidden="true">✕</span></button>`)
+        .map((id) => `<button type="button" class="chip" data-usun-pow="${id}" aria-label="Usuń ${escapeHtml(poId.get(id)!.t)}">${escapeHtml(poId.get(id)!.t)} <svg class="ikona" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>`)
         .join('');
     }
     function dodajPowiazane() {
@@ -317,10 +317,10 @@ const nazwyKategorii = Object.fromEntries(Object.entries(KATEGORIE).map(([id, k]
       const bledy: [string, string][] = [];
       if (!dane.termin) bledy.push(['termin', 'Podaj termin.']);
       else if (!slug) bledy.push(['termin', 'Termin musi zawierać litery lub cyfry.']);
-      else if (poId.has(slug)) bledy.push(['termin', 'To hasło już istnieje — zobacz ostrzeżenie poniżej.']);
+      else if (poId.has(slug)) bledy.push(['termin', 'To hasło już istnieje; zobacz ostrzeżenie poniżej.']);
       if (!dane.pl) bledy.push(['pl', 'Podaj polski odpowiednik lub krótki opis.']);
       if (!dane.skrot) bledy.push(['skrot', 'Napisz jedno zdanie wyjaśnienia.']);
-      if (tresc.length < 40) bledy.push(['definicja', 'Definicja jest za krótka — napisz przynajmniej 1–2 zdania.']);
+      if (tresc.length < 40) bledy.push(['definicja', 'Definicja jest za krótka; napisz przynajmniej 1-2 zdania.']);
       if (!dane.kategoria) bledy.push(['kategoria', 'Wybierz kategorię.']);
       if (!dane.status) bledy.push(['status', 'Wybierz status.']);
       const zle = dane.zrodla.find((z) => !z.tytul || !/^https?:\/\/\S+\.\S+/.test(z.url));
@@ -469,7 +469,7 @@ const nazwyKategorii = Object.fromEntries(Object.entries(KATEGORIE).map(([id, k]
       const btn = e.currentTarget as HTMLButtonElement;
       const stary = btn.innerHTML;
       const ok = await kopiuj(plik());
-      btn.textContent = ok ? 'Skopiowano ✓' : 'Nie udało się — skopiuj z podglądu pliku';
+      btn.textContent = ok ? 'Skopiowano' : 'Nie udało się; skopiuj z podglądu pliku';
       setTimeout(() => (btn.innerHTML = stary), 2500);
       if (!ok) (document.querySelector('details.plik') as HTMLDetailsElement).open = true;
     });

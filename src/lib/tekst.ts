@@ -6,7 +6,7 @@ export const fold = (s: string) =>
 
 export const slugify = (s: string) => fold(s).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
-/** Pierwsza litera hasła do grupowania A–Z. */
+/** Pierwsza litera hasła do grupowania A-Z. */
 export const litera = (termin: string) => {
   const c = fold(termin).replace(/[^a-z0-9]/g, '').charAt(0).toUpperCase();
   return /[A-Z]/.test(c) ? c : '#';
@@ -14,7 +14,7 @@ export const litera = (termin: string) => {
 
 export const porownajTerminy = (a: string, b: string) => fold(a).localeCompare(fold(b), 'pl');
 
-/** Usuwa znaczniki Markdown — do indeksu wyszukiwarki i opisów meta. */
+/** Usuwa znaczniki Markdown (do indeksu wyszukiwarki i opisów meta). */
 export const bezMarkdown = (md = '') =>
   md
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')

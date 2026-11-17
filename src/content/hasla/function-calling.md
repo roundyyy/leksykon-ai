@@ -1,6 +1,6 @@
 ---
 termin: function calling
-aliasy: [tool calling, tool call, tool use]
+aliasy: [tool calling, tool call]
 pl: wywoływanie funkcji / narzędzi
 skrot: model prosi aplikację o wykonanie funkcji
 kategoria: prompty-agenci

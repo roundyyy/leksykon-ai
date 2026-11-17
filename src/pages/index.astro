@@ -17,17 +17,17 @@ const ostatnie = [...hasla]
 const najnowszaData = ostatnie[0]?.data.dodano.getTime();
 const sameStartowe = ostatnie.every((h) => h.data.dodano.getTime() === najnowszaData);
 
-// Mapa pojęć — na podstawie podsumowania raportu źródłowego
+// Mapa pojęć na podstawie podsumowania raportu źródłowego
 const WARSTWY = [
-  { nazwa: 'Silnik', opis: 'model, który generuje odpowiedzi', hasla: ['transformer', 'llm'] },
-  { nazwa: 'Co widzi', opis: 'materiał, na którym pracuje w danej chwili', hasla: ['token', 'context-window'] },
-  { nazwa: 'Skąd wie', opis: 'wiedza dostarczana spoza treningu', hasla: ['embedding', 'retrieval', 'rag'] },
+  { nazwa: 'Silnik', opis: 'model, który generuje odpowiedzi', hasla: ['transformer', 'llm', 'slm'] },
+  { nazwa: 'Co widzi', opis: 'materiał, na którym pracuje w danej chwili', hasla: ['token', 'context-window', 'kv-cache'] },
+  { nazwa: 'Skąd wie', opis: 'wiedza dostarczana spoza treningu', hasla: ['embedding', 'chunking', 'vector-database', 'rag'] },
   { nazwa: 'Jak ma jej użyć', opis: 'instrukcje i dobór kontekstu', hasla: ['prompt-engineering', 'context-engineering'] },
-  { nazwa: 'Ręce', opis: 'połączenie ze światem zewnętrznym', hasla: ['function-calling', 'mcp'] },
-  { nazwa: 'Decyzje', opis: 'kto wybiera kolejne kroki', hasla: ['agent'] },
-  { nazwa: 'Kontrola', opis: 'sprawdzanie i pilnowanie zachowania', hasla: ['eval', 'guardrails', 'alignment'] },
+  { nazwa: 'Ręce', opis: 'połączenie ze światem zewnętrznym', hasla: ['function-calling', 'mcp', 'a2a', 'computer-use'] },
+  { nazwa: 'Decyzje', opis: 'kto wybiera kolejne kroki', hasla: ['agent', 'multi-agent-system', 'human-in-the-loop'] },
+  { nazwa: 'Kontrola', opis: 'sprawdzanie i pilnowanie zachowania', hasla: ['eval', 'llm-as-a-judge', 'guardrails', 'alignment'] },
 ];
-const KULTURA = ['vibe-coding', 'ai-slop', 'doomer', 'ai-booster', 'brain-rot'];
+const KULTURA = ['vibe-coding', 'ai-slop', 'workslop', 'doomer', 'ai-booster', 'brain-rot'];
 
 const lekkie = hasla.map((h) => ({ id: h.id, t: h.data.termin, p: h.data.pl, s: wielka(h.data.skrot), k: h.data.kategoria }));
 const dzien = Math.floor(Date.now() / 864e5);
@@ -40,7 +40,7 @@ const dzisiejsze = hasla[dzien % hasla.length];
       <p class="hero__kicker">Leksykon AI · stan na {STAN_NA}</p>
       <h1 class="hero__tytul">Język AI <span>po ludzku</span></h1>
       <p class="hero__lead">
-        {ileHasel(hasla.length)} — od tokena do slopu. Technika, biznes, slang i memy, wyjaśnione po polsku, z przykładami użycia.
+        {ileHasel(hasla.length)}: od tokena do slopu. Technika, biznes, slang i memy, wyjaśnione po polsku, z przykładami użycia.
       </p>
       <button type="button" class="hero__szukaj" data-otworz-szukaj>
         <Ikona nazwa="szukaj" />
@@ -97,7 +97,7 @@ const dzisiejsze = hasla[dzien % hasla.length];
       <div class="sekcja__naglowek">
         <h2 id="mapa">Jak to się łączy</h2>
       </div>
-      <p class="mapa__wstep">Jedna mapa pojęciowa nowoczesnej aplikacji AI — od silnika po kontrolę.</p>
+      <p class="mapa__wstep">Jedna mapa pojęciowa nowoczesnej aplikacji AI, od silnika po kontrolę.</p>
       <ol class="mapa">
         {
           WARSTWY.map((w, i) => (
@@ -105,7 +105,7 @@ const dzisiejsze = hasla[dzien % hasla.length];
               <span class="mapa__nr" aria-hidden="true">{i + 1}</span>
               <div class="mapa__tresc">
                 <p class="mapa__nazwa">
-                  <strong>{w.nazwa}</strong> — {w.opis}
+                  <strong>{w.nazwa}:</strong> {w.opis}
                 </p>
                 <div class="chipy">
                   {w.hasla.map((id) => mapa.get(id)).filter((h) => h !== undefined).map((h) => (
@@ -121,7 +121,7 @@ const dzisiejsze = hasla[dzien % hasla.length];
         }
       </ol>
       <div class="mapa__kultura">
-        <p class="mapa__nazwa"><strong>Nad tym wszystkim: kultura</strong> — jak technologia jest używana, sprzedawana i postrzegana</p>
+        <p class="mapa__nazwa"><strong>Nad tym wszystkim kultura:</strong> jak technologia jest używana, sprzedawana i postrzegana</p>
         <div class="chipy">
           {
             KULTURA.map((id) => mapa.get(id)).filter((h) => h !== undefined).map((h) => (

@@ -19,16 +19,20 @@ export const KATEGORIE = {
   },
   bezpieczenstwo: {
     nazwa: 'Bezpieczeństwo i kontrola',
-    opis: 'Ataki, zabezpieczenia i dopasowanie zachowania AI.',
+    opis: 'Ataki, zabezpieczenia, deepfaki i dopasowanie zachowania AI.',
+  },
+  'biznes-prawo': {
+    nazwa: 'Biznes, prawo i praca',
+    opis: 'AI w firmach, rynek i regulacje: od AI Act po shadow AI.',
   },
 } as const;
 
 export const STATUSY = {
-  fundamentalny: { nazwa: 'fundamentalny', opis: 'Podstawa — bez tego trudno rozmawiać o AI.' },
+  fundamentalny: { nazwa: 'fundamentalny', opis: 'Podstawa; bez tego trudno rozmawiać o AI.' },
   utrwalony: { nazwa: 'utrwalony', opis: 'Stabilne, powszechnie rozumiane znaczenie.' },
   nowy: { nazwa: 'nowy', opis: 'Świeży termin, znaczenie jeszcze się kształtuje.' },
   sporny: { nazwa: 'sporny', opis: 'Używany powszechnie, ale zakres znaczenia budzi spory.' },
-  marketingowy: { nazwa: 'marketingowy', opis: 'Mocno nadużywany w marketingu — dopytaj, co dokładnie znaczy.' },
+  marketingowy: { nazwa: 'marketingowy', opis: 'Mocno nadużywany w marketingu; dopytaj, co dokładnie znaczy.' },
   niszowy: { nazwa: 'niszowy', opis: 'Znany głównie w wąskim środowisku.' },
 } as const;
 

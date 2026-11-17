@@ -1,10 +1,10 @@
 ---
 termin: GPAI
 rozwiniecie: general-purpose AI model
-aliasy: [AI Act]
+aliasy: []
 pl: model AI ogólnego przeznaczenia
 skrot: unijna kategoria prawna modeli AI ogólnego przeznaczenia (AI Act)
-kategoria: modele
+kategoria: biznes-prawo
 rejestr: [prawny]
 status: utrwalony
 status_uwagi: ściśle zdefiniowany w UE

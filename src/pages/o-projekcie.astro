@@ -19,10 +19,10 @@ const hasla = await wszystkieHasla();
     </p>
 
     <p>
-      Celowo mieszamy terminy bardzo ścisłe — jak <a href={url('/haslo/embedding/')}>embedding</a> czy
-      <a href={url('/haslo/quantization/')}>quantization</a> — z językiem potocznym: <a href={url('/haslo/ai-slop/')}>AI slop</a>,
+      Celowo mieszamy terminy bardzo ścisłe, jak <a href={url('/haslo/embedding/')}>embedding</a> czy
+      <a href={url('/haslo/quantization/')}>quantization</a>, z językiem potocznym: <a href={url('/haslo/ai-slop/')}>AI slop</a>,
       <a href={url('/haslo/vibe-coding/')}>vibe coding</a> czy <a href={url('/haslo/doomer/')}>doomer</a>. Rozmowa o AI toczy się
-      równocześnie w laboratoriach, działach IT, na LinkedInie, X, Reddicie i w memach — leksykon próbuje nadążyć za wszystkimi
+      równocześnie w laboratoriach, działach IT, na LinkedInie, X, Reddicie i w memach; leksykon próbuje nadążyć za wszystkimi
       naraz.
     </p>
     <p>
@@ -32,7 +32,7 @@ const hasla = await wszystkieHasla();
 
     <h2>Jak czytać oznaczenia</h2>
     <h3>Status</h3>
-    <p>Status nie ocenia wartości pojęcia — mówi, jak stabilne jest jego znaczenie.</p>
+    <p>Status nie ocenia wartości pojęcia; mówi, jak stabilne jest jego znaczenie.</p>
     <dl class="legenda">
       {
         Object.entries(STATUSY).map(([id, s]) => (
@@ -44,7 +44,7 @@ const hasla = await wszystkieHasla();
       }
     </dl>
     <p>
-      Szczególnie uważaj na hasła oznaczone jako <em>sporne</em> i <em>marketingowe</em> — np. <a href={url('/haslo/agentic-ai/')}>agentic AI</a>,
+      Szczególnie uważaj na hasła oznaczone jako <em>sporne</em> i <em>marketingowe</em>, np. <a href={url('/haslo/agentic-ai/')}>agentic AI</a>,
       <a href={url('/haslo/reasoning/')}>reasoning</a>, <a href={url('/haslo/agi/')}>AGI</a> czy
       <a href={url('/haslo/open-source-ai/')}>open source AI</a>. Są powszechnie używane, ale ich zakres wciąż budzi spory.
     </p>
@@ -68,31 +68,34 @@ const hasla = await wszystkieHasla();
     </dl>
 
     <h2 id="wspoltworzenie">Jak dodać lub poprawić hasło</h2>
-    <p>Leksykon jest otwarty — każdy może zaproponować nowe hasło albo poprawkę. Potrzebne jest tylko darmowe konto na GitHubie.</p>
+    <p>Leksykon jest otwarty: każdy może zaproponować nowe hasło albo poprawkę. Potrzebne jest tylko darmowe konto na GitHubie.</p>
     <ol>
       <li>
-        <strong>Formularz na stronie</strong> — <a href={url('/dodaj/')}>Dodaj hasło</a>. Wypełniasz pola, a strona przygotowuje
+        <strong>Formularz na stronie:</strong> <a href={url('/dodaj/')}>Dodaj hasło</a>. Wypełniasz pola, a strona przygotowuje
         gotowy plik i otwiera GitHuba. Klikasz „Commit changes” (lub „Propose changes”) i gotowe.
       </li>
       <li>
-        <strong>Sama propozycja</strong> — <a href={zgloszenieUrl('nowe-haslo.yml')}>zgłoś pomysł na hasło</a>, jeśli nie chcesz
+        <strong>Sama propozycja:</strong> <a href={zgloszenieUrl('nowe-haslo.yml')}>zgłoś pomysł na hasło</a>, jeśli nie chcesz
         pisać pełnej definicji. Ktoś z zespołu je opracuje.
       </li>
       <li>
-        <strong>Poprawka</strong> — na dole każdego hasła są przyciski „Edytuj” i „Zgłoś błąd”.
+        <strong>Poprawka:</strong> na dole każdego hasła są przyciski „Edytuj” i „Zgłoś błąd”.
       </li>
     </ol>
     <p>
-      Każda zmiana jest automatycznie sprawdzana. Hasła od osób spoza zespołu pojawiają się na stronie po akceptacji —
+      Każda zmiana jest automatycznie sprawdzana. Hasła od osób spoza zespołu pojawiają się na stronie po akceptacji,
       zwykle w ciągu kilku dni.
     </p>
 
     <h2>Źródła i rzetelność</h2>
     <p>
-      Pierwsza wersja leksykonu powstała na podstawie przeglądu dokumentacji, publikacji naukowych, stanowisk instytucji
-      (m.in. NIST, SEC, Open Source Initiative, unijnego AI Act) oraz słowników (Oxford, Cambridge, Merriam-Webster). Tam,
-      gdzie to istotne, nazwy instytucji są wymienione w treści hasła. Definicje dotyczące szybko zmieniających się pojęć
-      mają datę „aktualne na” — jeśli coś się zdezaktualizowało, <a href={zgloszenieUrl('poprawka.yml')}>daj znać</a>.
+      Leksykon powstał na podstawie przeglądu dokumentacji technicznej (m.in. vLLM, Hugging Face, specyfikacji MCP, A2A
+      i C2PA), publikacji naukowych (np. QLoRA, Constitutional AI, prac o test-time compute i zanieczyszczeniu benchmarków),
+      stanowisk instytucji (NIST, SEC, Open Source Initiative, Komisja Europejska i tekst AI Act) oraz słowników (Oxford,
+      Cambridge, Merriam-Webster). Przy świeżym slangu, takim jak workslop czy agent washing, podstawą są badania i raporty
+      rynkowe, a takie hasła mają status „nowy” lub „niszowy”. Tam, gdzie to istotne, nazwy instytucji są wymienione w treści
+      hasła. Definicje dotyczące szybko zmieniających się pojęć
+      mają datę „aktualne na”. Jeśli coś się zdezaktualizowało, <a href={zgloszenieUrl('poprawka.yml')}>daj znać</a>.
     </p>
 
     <p class="o__kod">

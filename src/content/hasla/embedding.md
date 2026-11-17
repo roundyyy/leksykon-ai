@@ -13,6 +13,6 @@ dodano: 2026-11-17
 aktualne_na: 2026-11-17
 ---
 
-Lista liczb reprezentująca treść lub właściwości obiektu — np. tekstu, obrazu lub dźwięku — w przestrzeni matematycznej, tak aby obiekty podobne semantycznie znajdowały się zwykle blisko siebie.
+Lista liczb reprezentująca treść lub właściwości obiektu - np. tekstu, obrazu lub dźwięku - w przestrzeni matematycznej, tak aby obiekty podobne semantycznie znajdowały się zwykle blisko siebie.
 
 Embeddingi stanowią podstawę wielu systemów wyszukiwania i RAG.

@@ -7,7 +7,7 @@ kategoria: prompty-agenci
 rejestr: [techniczny, marketingowy]
 status: marketingowy
 status_uwagi: "nowy, częściowo marketingowy"
-przyklad: "Nasz nowy asystent to agentic AI — sam zbiera dane, wypełnia formularze i wysyła raporty."
+przyklad: "Nasz nowy asystent to agentic AI - sam zbiera dane, wypełnia formularze i wysyła raporty."
 powiazane: [agent, workflow]
 zrodla: []
 dodano: 2026-11-17

@@ -1,5 +1,5 @@
 /* =========================================================================
-   Leksykon AI — style globalne (mobile-first)
+   Leksykon AI: style globalne (mobile-first)
    ========================================================================= */
 
 :root {
@@ -26,6 +26,7 @@
   --c-trening: #a95806;
   --c-prompty-agenci: #0d7a63;
   --c-bezpieczenstwo: #7744d1;
+  --c-biznes-prawo: #5a7a0a;
 
   --font-sans: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-serif: 'Source Serif 4 Variable', Georgia, 'Times New Roman', serif;
@@ -63,6 +64,7 @@
     --c-trening: #f2a65a;
     --c-prompty-agenci: #4fcfaa;
     --c-bezpieczenstwo: #b799ff;
+    --c-biznes-prawo: #b8d863;
     --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 20px rgb(0 0 0 / 0.25);
     --shadow-lg: 0 10px 40px rgb(0 0 0 / 0.5);
   }
@@ -91,6 +93,7 @@
   --c-trening: #f2a65a;
   --c-prompty-agenci: #4fcfaa;
   --c-bezpieczenstwo: #b799ff;
+  --c-biznes-prawo: #b8d863;
   --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 20px rgb(0 0 0 / 0.25);
   --shadow-lg: 0 10px 40px rgb(0 0 0 / 0.5);
 }
@@ -279,6 +282,7 @@ main { padding-block: 20px 40px; }
 .kat-trening { --kat: var(--c-trening); }
 .kat-prompty-agenci { --kat: var(--c-prompty-agenci); }
 .kat-bezpieczenstwo { --kat: var(--c-bezpieczenstwo); }
+.kat-biznes-prawo { --kat: var(--c-biznes-prawo); }
 .kropka { width: 10px; height: 10px; border-radius: 50%; background: var(--kat); flex-shrink: 0; }
 
 /* ---- chipy (linki do haseł, filtry) ---- */

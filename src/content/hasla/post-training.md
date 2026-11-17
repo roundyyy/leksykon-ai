@@ -1,6 +1,6 @@
 ---
 termin: post-training
-aliasy: [posttraining, SFT]
+aliasy: [posttraining]
 pl: trening po pretrainingu
 skrot: "wszystkie etapy treningu po pretrainingu: SFT, uczenie preferencji, trening bezpieczeństwa"
 kategoria: trening

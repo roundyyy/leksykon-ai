@@ -13,6 +13,6 @@ dodano: 2026-11-17
 aktualne_na: 2026-11-17
 ---
 
-Trenowanie mniejszego modelu — „ucznia” — tak, aby odtwarzał zachowanie większego lub droższego modelu — „nauczyciela”. Celem jest zwykle niższy koszt i mniejszy model przy zachowaniu możliwie dużej części jakości.
+Trenowanie mniejszego modelu - „ucznia” - tak, aby odtwarzał zachowanie większego lub droższego modelu - „nauczyciela”. Celem jest zwykle niższy koszt i mniejszy model przy zachowaniu możliwie dużej części jakości.
 
 Destylacja jest jedną z klasycznych metod optymalizacji inferencji obok kwantyzacji i pruning.
